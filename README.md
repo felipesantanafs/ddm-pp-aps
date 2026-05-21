@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔬 DEAM-PP — Avaliação de Impacto das Delegacias Especializadas de Atendimento à Mulher
+# 🔬 DDM-PP — Avaliação de Impacto das Delegacia de Defesa da Mulher
 
 **Violência contra Mulheres no Município de São Paulo:**
 *Diagnóstico Espaço-Temporal e Avaliação de Impacto das DDMs*
