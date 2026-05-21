@@ -124,7 +124,7 @@ Os microdados são obtidos diretamente via integração com o data lake público
 | Base | Fonte Original | Papel no Modelo | Filtros Aplicados |
 |------|----------------|-----------------|-------------------|
 | **SIM** | DataSUS | Eficácia (Feminicídios) | SP (3550308), Mulheres, CIDs Agressão (X85-Y09) |
-| **SINAN** | DataSUS | Acesso (Ameaça/Lesão) | SP (3550308), Mulheres |
+| **SINAN** | DataSUS | Acesso (Ameaça/Lesão) | SP (3550308), Mulheres, com **Código CNES (Proxy Geográfico)** |
 | **SEADE** | Gov. SP | Covariáveis (Controles) | Dados agregados por distrito (vulnerabilidade, renda) |
 
 ---
