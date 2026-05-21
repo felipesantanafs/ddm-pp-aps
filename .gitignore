@@ -69,4 +69,4 @@ dados/
 # ===========================
 # Credenciais
 # ===========================
-codes/config.py
+codes/bd_config.py
