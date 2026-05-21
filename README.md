@@ -110,7 +110,9 @@ deams-pp-aps/
 │   ├── sinan_violencia_sp.csv       # Extraído via BigQuery (SINAN) — 108.427 registros
 │   ├── cnes_sp_geolocalizado.csv    # Dicionário do CNES extraído via BigQuery — 54.883 registros
 │   ├── sinan_cnes_merged.csv        # Base unificada com as coordenadas dos hospitais
-│   ├── Feminicidio_2015_2022.xlsx   # Base da SSP-SP
+│   ├── funil_violencia_ano.csv      # Dados agregados do funil da violência (SIM vs SINAN)
+│   ├── Feminicidio_2015_2022.xlsx   # Base da SSP-SP (Completa)
+│   ├── dados_feminicidio.xlsx       # Base da SSP-SP (Filtrada)
 │   ├── SIPCV_2026.xlsx              # Base de Boletins de Ocorrência SSP-SP
 │   └── data_sipcv.csv               # SIPCV filtrado e processado
 │
