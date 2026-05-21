@@ -91,17 +91,26 @@ flowchart LR
 ## 📁 Estrutura do Repositório
 
 ```text
-deams-pp/
+deams-pp-aps/
 │
-├── 📄 README.md                 # Este arquivo
+├── 📄 README.md                    # Este arquivo
+├── 📄 pyproject.toml               # Dependências e metadados do projeto
 │
-├── 📂 codes/                    # Scripts de extração e análise
-│   ├── extract_sim_bd.py        # Query para dados de Feminicídio (Base dos Dados)
-│   └── extract_sinan_bd.py      # Query para dados de Violência Não Letal (Base dos Dados)
+├── 📂 codes/                       # Scripts de extração e pré-processamento
+│   ├── extract_sim_bd.py            # Query para dados de Feminicídio — SIM (Base dos Dados)
+│   ├── extract_sinan_bd.py          # Query para dados de Violência Não Letal — SINAN (Base dos Dados)
+│   ├── data_filter_sicpv.py         # Filtragem e limpeza da base SIPCV (Boletins de Ocorrência SSP-SP)
+│   ├── pipeline_feminicidio.py      # Pipeline de pré-processamento da base de Feminicídio (2015-2022)
+│   └── bd_config.py                 # ⚠️ LOCAL APENAS — contém o Billing ID do Google Cloud. Não versionado.
 │
-├── 📂 dados/                    # Diretório de armazenamento (arquivos CSV baixados)
+├── 📂 dados/                       # Dados brutos e processados (não versionados por tamanho)
+│   ├── sim_feminicidios_sp.csv      # Extraído via BigQuery (SIM) — 7.554 registros
+│   ├── sinan_violencia_sp.csv       # Extraído via BigQuery (SINAN) — 108.427 registros
+│   ├── Feminicidio_2015_2022.xlsx   # Base da SSP-SP
+│   ├── SIPCV_2026.xlsx              # Base de Boletins de Ocorrência SSP-SP
+│   └── data_sipcv.csv               # SIPCV filtrado e processado
 │
-└── 📂 relatorios/               # Relatórios e documentação
+└── 📂 relatorios/                  # Relatórios e documentação do projeto
     ├── PROJETO DE PESQUISA-VIOLENCIA SP.docx
     └── PROJETO DE PESQUISA-VIOLENCIA SP.txt
 ```
@@ -138,8 +147,12 @@ Os scripts em Python dentro da pasta `codes/` já possuem as *queries* SQL otimi
 
 ### Extração
 
-1. Abra os arquivos `codes/extract_sim_bd.py` e `codes/extract_sinan_bd.py`.
-2. Substitua a variável `billing_id = "SEU_BILLING_ID_AQUI"` pelo ID do seu projeto no Google Cloud.
+1. Abra o arquivo `codes/extract_sim_bd.py` ou `codes/extract_sinan_bd.py`.
+2. Crie o arquivo `codes/bd_config.py` localmente com o seguinte conteúdo:
+   ```python
+   BILLING_ID = "seu-projeto-id-aqui"
+   ```
+   > **Atenção:** este arquivo está no `.gitignore` e não deve ser versionado.
 3. Execute no terminal:
    ```bash
    python codes/extract_sim_bd.py
@@ -153,7 +166,8 @@ Os scripts em Python dentro da pasta `codes/` já possuem as *queries* SQL otimi
 
 - [x] Reestruturação do escopo do projeto (Foco em São Paulo e DiD Intra-municipal)
 - [x] Criação das *queries* otimizadas para extração SIM/SINAN via Base dos Dados
-- [ ] Execução da extração dos microdados (Requer GCP Billing ID)
+- [x] Extração dos microdados SIM (7.554 registros) e SINAN (108.427 registros)
+- [x] Pré-processamento das bases SSP-SP (SIPCV e Feminicídio 2015-2022)
 - [ ] Construção do Funil da Violência e EDA Espaço-Temporal
 - [ ] Estimação do modelo DiD
 - [ ] Construção do Dashboard Interativo (Streamlit)

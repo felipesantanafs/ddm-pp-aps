@@ -55,7 +55,10 @@ desktop.ini
 # ===========================
 # Dados pesados
 # ===========================
-dados/
+# Arquivos de dados pesados (não versionados — baixe localmente via scripts)
+dados/SIPCV_2026.xlsx
+dados/Feminicidio_2015_2022.xlsx
+dados/data_sipcv.csv
 
 # ===========================
 # Logs e cache

@@ -118,12 +118,14 @@ def processar_base_sipcv(input_path: str, output_path: str):
 
 
 if __name__ == "__main__":
-    # Caminhos absolutos conforme a estrutura do projeto
-    ARQUIVO_ENTRADA = r"c:\Users\felip\deams-pp\dados\SIPCV_2026.xlsx"
+    # Caminhos dinâmicos a partir da raiz do projeto, sem hardcode de caminho local
+    BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+
+    ARQUIVO_ENTRADA = os.path.join(BASE_DIR, "dados", "SIPCV_2026.xlsx")
 
     # Salvaremos como CSV para melhor performance em Data Science,
     # mas que abre normalmente no Excel (utf-8-sig + sep=';')
-    ARQUIVO_SAIDA = r"c:\Users\felip\deams-pp\dados\data_sipcv.csv"
+    ARQUIVO_SAIDA = os.path.join(BASE_DIR, "dados", "data_sipcv.csv")
 
     # Garante que o diretório de saída exista
     os.makedirs(os.path.dirname(ARQUIVO_SAIDA), exist_ok=True)

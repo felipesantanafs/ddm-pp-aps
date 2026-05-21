@@ -1,7 +1,7 @@
 [project]
-name = "deams-pp"
+name = "deams-pp-aps"
 version = "0.1.0"
-description = "Álcool e Violência Doméstica contra Mulheres no Brasil: Diagnóstico Espaço-Temporal e Avaliação de Impacto Causal das DEAMs"
+description = "Violência contra Mulheres no Município de São Paulo: Diagnóstico Espaço-Temporal e Avaliação de Impacto das DDMs"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
@@ -18,11 +18,10 @@ dependencies = [
 
     # Análise espacial (Etapa 1 — Diagnóstico)
     "geopandas>=0.14",
-    "libpysal>=4.9",          # Índice de Moran (Global/Local — LISA)
     "shapely>=2.0",
 
-    # Estatística circular (Etapa 1 — Diagnóstico)
-    "astropy>=6.0",           # circular stats via astropy.stats
+    # Extração de dados via Base dos Dados (BigQuery)
+    "basedosdados>=1.6",
 
     # Econometria e avaliação de impacto (Etapa 2 — Causal)
     "statsmodels>=0.14",
