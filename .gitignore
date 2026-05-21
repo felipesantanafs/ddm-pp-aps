@@ -55,10 +55,10 @@ desktop.ini
 # ===========================
 # Dados pesados
 # ===========================
-# Arquivos de dados pesados (não versionados — baixe localmente via scripts)
-dados/SIPCV_2026.xlsx
-dados/sinan_cnes_merged.csv
-dados/sinan_violencia_sp.csv
+# Arquivos de dados pesados NÃO utilizados ou temporários
+# (Os arquivos de dados ativos agora são rastreados no Git conforme solicitação)
+dados/**/*_unused.*
+dados/**/temp_*
 
 # ===========================
 # Logs e cache
@@ -72,4 +72,4 @@ dados/sinan_violencia_sp.csv
 # ===========================
 # Credenciais
 # ===========================
-codes/bd_config.py
+codes/extracao_filtragem/bd_config.py

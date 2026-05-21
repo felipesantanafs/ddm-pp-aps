@@ -73,13 +73,14 @@ flowchart LR
 ## 📐 Metodologia
 
 ### Etapa 1 — Diagnóstico e Ciência de Dados
-- **Análise Descritiva Espacial:** Mapas de densidade (Heatmaps) por Distrito Policial e Subprefeitura.
-- **Funil da Violência:** Evolução e correlação temporal entre denúncias de Ameaça, Lesão Corporal e Feminicídios na capital.
+- **Análise Descritiva Espacial:** Mapas de densidade (Heatmaps) por Distrito Policial, Bairro e Subprefeitura.
+- **Integração de Bases e Geolocalização (SINAN + CNES):** Como a base do SINAN omite endereços exatos para preservação da privacidade das vítimas, adotamos a **Hipótese de Proxy Espacial (Bairro de Atendimento)**. O SINAN é cruzado com o diretório geocodificado do CNES através da chave do estabelecimento notificador (`id_unidade_notificacao` = `id_estabelecimento_cnes`). Assume-se que a vítima de agressão grave busca socorro imediato no próprio bairro ou em bairros vizinhos. Desse modo, o bairro do estabelecimento de saúde serve como proxy geográfico do local da agressão.
+- **Funil da Violência:** Evolução e correlação temporal entre denúncias de Ameaça (SSP), Lesão Corporal (SSP), Violência Física Notificada Grave (SINAN) e Feminicídios (SIM) na capital.
 - **Sazonalidade:** Gráficos temporais cruzando horários e dias da semana.
 
 ### Etapa 2 — Avaliação de Impacto Causal
 - **Método:** Diferenças-em-Diferenças (DiD) em nível intra-municipal.
-- **Controle:** Distritos paulistanos atendidos por DDMs em horário comercial (ou sem especializada) vs. DDMs 24h.
+- **Controle:** Bairros/Distritos paulistanos atendidos por DDMs em horário comercial (ou sem especializada) vs. DDMs 24h.
 - **Pareamento:** Propensity Score Matching via indicadores socioeconômicos da Fundação SEADE.
 
 ### Produto Final
@@ -96,29 +97,49 @@ deams-pp-aps/
 ├── 📄 README.md                    # Este arquivo
 ├── 📄 pyproject.toml               # Dependências e metadados do projeto
 │
-├── 📂 codes/                       # Scripts de extração e pré-processamento
-│   ├── extract_sim_bd.py            # Query para dados de Feminicídio — SIM (Base dos Dados)
-│   ├── extract_sinan_bd.py          # Query para dados de Violência Não Letal — SINAN (Base dos Dados)
-│   ├── extract_cnes_bd.py           # Dicionário geolocalizado do CNES para mapear delegacias
-│   ├── merge_sinan_cnes.py          # Unifica o SINAN com as informações espaciais do CNES
-│   ├── data_filter_sicpv.py         # Filtragem e limpeza da base SIPCV (Boletins de Ocorrência SSP-SP)
-│   ├── pipeline_feminicidio.py      # Pipeline de pré-processamento da base de Feminicídio (2015-2022)
-│   └── bd_config.py                 # ⚠️ LOCAL APENAS — contém o Billing ID do Google Cloud. Não versionado.
+├── 📂 codes/                       # Scripts organizados por fases de desenvolvimento
+│   ├── 📂 extracao_filtragem/      # Extração (APIs/BigQuery) e higienização inicial
+│   │   ├── bd_config.py            # ⚠️ LOCAL APENAS — credenciais GCP (Não versionado)
+│   │   ├── extract_cnes_bd.py      # Query de estabelecimentos geolocalizados do CNES
+│   │   ├── extract_sim_bd.py       # Query de feminicídios notificados no SIM/DataSUS
+│   │   ├── extract_sinan_bd.py     # Query de notificações de agressões no SINAN/DataSUS
+│   │   ├── merge_sinan_cnes.py     # Cruzamento SINAN + CNES usando a chave do hospital
+│   │   ├── data_filter_sicpv.py    # Filtro da base SIPCV (Boletins de Ocorrência SSP-SP)
+│   │   └── pipeline_feminicidio.py # Filtro e pré-processamento de feminicídios da SSP-SP
+│   │
+│   ├── 📂 analise_dados/           # Análise exploratória e visualizações
+│   │   └── eda_funil_violencia.py  # Análise do Funil da Violência e geração de gráficos
+│   │
+│   ├── 📂 streamlit/               # Dashboard Interativo (Fase Futura)
+│   │   └── .gitkeep
+│   │
+│   └── 📂 inferencia_causal/       # Estimação do modelo econométrico DiD (Fase Futura)
+│       └── .gitkeep
 │
-├── 📂 dados/                       # Dados brutos e processados (não versionados por tamanho)
-│   ├── sim_feminicidios_sp.csv      # Extraído via BigQuery (SIM) — 7.554 registros
-│   ├── sinan_violencia_sp.csv       # Extraído via BigQuery (SINAN) — 108.427 registros
-│   ├── cnes_sp_geolocalizado.csv    # Dicionário do CNES extraído via BigQuery — 54.883 registros
-│   ├── sinan_cnes_merged.csv        # Base unificada com as coordenadas dos hospitais
-│   ├── funil_violencia_ano.csv      # Dados agregados do funil da violência (SIM vs SINAN)
-│   ├── Feminicidio_2015_2022.xlsx   # Base da SSP-SP (Completa)
-│   ├── dados_feminicidio.xlsx       # Base da SSP-SP (Filtrada)
-│   ├── SIPCV_2026.xlsx              # Base de Boletins de Ocorrência SSP-SP
-│   └── data_sipcv.csv               # SIPCV filtrado e processado
+├── 📂 dados/                       # Armazenamento estruturado de fontes e consolidações
+│   ├── 📂 ssp/                     # Dados provenientes da Secretaria de Segurança Pública
+│   │   ├── SIPCV_2026.xlsx         # Boletins de Ocorrência SSP (Bruto)
+│   │   ├── data_sipcv.csv          # Boletins de Ocorrência SSP (Filtrado)
+│   │   ├── Feminicidio_2015_2022.xlsx # Feminicídios SSP (Bruto)
+│   │   └── dados_feminicidio.xlsx  # Feminicídios SSP (Filtrado)
+│   │
+│   ├── 📂 sim/                     # Dados provenientes do SIM (Sistema de Mortalidade)
+│   │   └── sim_feminicidios_sp.csv # Óbitos por agressão contra mulheres (DataSUS)
+│   │
+│   ├── 📂 sinan/                   # Dados provenientes do SINAN (Notificações)
+│   │   ├── sinan_violencia_sp.csv  # Microdados de agressões físicas (DataSUS)
+│   │   └── sinan_cnes_merged.csv   # Base integrada espacialmente ao CNES
+│   │
+│   ├── 📂 cnes/                    # Cadastro Nacional de Estabelecimentos de Saúde
+│   │   └── cnes_sp_geolocalizado.csv # Dicionário de geolocalização das unidades de saúde
+│   │
+│   └── 📂 consolidado/             # Bases prontas agregadas para visualização/modelagem
+│       └── funil_violencia_ano.csv # Tabela agregada anual do Funil da Violência
 │
-└── 📂 relatorios/                  # Relatórios e documentação do projeto
+└── 📂 relatorios/                  # Relatórios gerenciais e imagens geradas
     ├── PROJETO DE PESQUISA-VIOLENCIA SP.docx
-    └── PROJETO DE PESQUISA-VIOLENCIA SP.txt
+    ├── PROJETO DE PESQUISA-VIOLENCIA SP.txt
+    └── funil_violencia.png         # Gráfico temporal de evolução do funil
 ```
 
 ---
@@ -137,13 +158,13 @@ Os microdados são obtidos diretamente via integração com o data lake público
 
 ## 🚀 Como Extrair os Dados
 
-Os scripts em Python dentro da pasta `codes/` já possuem as *queries* SQL otimizadas para processar os dados em nuvem antes de baixar, trazendo apenas o escopo do nosso estudo.
+Os scripts em Python dentro da pasta `codes/extracao_filtragem/` já possuem as *queries* SQL otimizadas para processar os dados em nuvem antes de baixar, trazendo apenas o escopo geográfico e de perfil do nosso estudo.
 
 ### Pré-requisitos
 
-1. Ter Python 3.10+ instalado com Pandas e `basedosdados`:
+1. Ter Python 3.10+ instalado com Pandas, `basedosdados` e bibliotecas de excel:
    ```bash
-   pip install pandas basedosdados
+   pip install pandas basedosdados openpyxl xlrd
    ```
 2. Ter um projeto no **Google Cloud Platform (GCP)**.
 3. Estar autenticado no GCP no seu terminal local:
@@ -151,20 +172,22 @@ Os scripts em Python dentro da pasta `codes/` já possuem as *queries* SQL otimi
    gcloud auth application-default login
    ```
 
-### Extração
+### Extração e Processamento
 
-1. Abra o arquivo `codes/extract_sim_bd.py` ou `codes/extract_sinan_bd.py`.
-2. Crie o arquivo `codes/bd_config.py` localmente com o seguinte conteúdo:
+1. Entre na pasta dos scripts de extração.
+2. Crie o arquivo `codes/extracao_filtragem/bd_config.py` localmente com o seguinte conteúdo:
    ```python
    BILLING_ID = "seu-projeto-id-aqui"
    ```
-   > **Atenção:** este arquivo está no `.gitignore` e não deve ser versionado.
-3. Execute no terminal:
+   > **Atenção:** este arquivo está no `.gitignore` e não é enviado ao GitHub.
+3. Execute no terminal a partir da raiz do repositório:
    ```bash
-   python codes/extract_sim_bd.py
-   python codes/extract_sinan_bd.py
+   python codes/extracao_filtragem/extract_cnes_bd.py
+   python codes/extracao_filtragem/extract_sim_bd.py
+   python codes/extracao_filtragem/extract_sinan_bd.py
+   python codes/extracao_filtragem/merge_sinan_cnes.py
    ```
-4. Os arquivos `.csv` prontos para análise aparecerão automaticamente na pasta `dados/`.
+4. Os arquivos processados e consolidados aparecerão automaticamente organizados nas respectivas subpastas da pasta `dados/`.
 
 ---
 
