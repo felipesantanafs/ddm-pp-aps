@@ -53,12 +53,9 @@ desktop.ini
 ~$*.xlsm
 
 # ===========================
-# Dados pesados (opcional)
-# Descomente se quiser ignorar
-# as bases brutas do repositório
+# Dados pesados
 # ===========================
-# dados/SIPCV_2026.xlsx
-# dados/Feminicidio_2015_2022.xlsx
+dados/
 
 # ===========================
 # Logs e cache
@@ -68,3 +65,8 @@ desktop.ini
 .ruff_cache/
 .mypy_cache/
 .pytest_cache/
+
+# ===========================
+# Credenciais
+# ===========================
+codes/config.py

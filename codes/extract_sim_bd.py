@@ -1,9 +1,10 @@
 import basedosdados as bd
 import pandas as pd
 import os
+from bd_config import BILLING_ID
 
 # Substitua pelo seu ID de projeto do Google Cloud
-billing_id = "SEU_BILLING_ID_AQUI" 
+billing_id = BILLING_ID
 
 # Definir caminho para salvar os dados
 output_dir = r"c:\Users\felip\deams-pp-aps\dados"
@@ -11,7 +12,7 @@ os.makedirs(output_dir, exist_ok=True)
 output_file = os.path.join(output_dir, "sim_feminicidios_sp.csv")
 
 # A query foi otimizada para filtrar APENAS mulheres, vítimas de agressão, na cidade de São Paulo
-query = """
+query = """ 
 WITH 
 dicionario_tipo_obito AS (
     SELECT chave AS chave_tipo_obito, valor AS descricao_tipo_obito
@@ -65,9 +66,9 @@ print("Iniciando o download dos dados via Base dos Dados (BigQuery)...")
 try:
     df = bd.read_sql(query=query, billing_project_id=billing_id)
     print(f"Download concluído! Total de registros encontrados: {len(df)}")
-    
+
     # Salvar em CSV na pasta dados
-    df.to_csv(output_file, index=False, encoding='utf-8')
+    df.to_csv(output_file, index=False, encoding="utf-8")
     print(f"Dados salvos com sucesso em: {output_file}")
 except Exception as e:
     print(f"Erro ao executar a query: {e}")

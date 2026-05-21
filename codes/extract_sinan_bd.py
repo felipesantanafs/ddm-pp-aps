@@ -1,9 +1,11 @@
 import basedosdados as bd
 import pandas as pd
 import os
+import sys
+sys.path.append(os.path.dirname(__file__))
+from bd_config import BILLING_ID
 
-# Substitua pelo seu ID de projeto do Google Cloud
-billing_id = "SEU_BILLING_ID_AQUI" 
+billing_id = BILLING_ID
 
 # Definir caminho para salvar os dados
 output_dir = r"c:\Users\felip\deams-pp-aps\dados"
@@ -62,17 +64,15 @@ LEFT JOIN (SELECT DISTINCT id_municipio, nome FROM `basedosdados.br_bd_diretorio
 WHERE 
     -- Filtro 1: Apenas Município de São Paulo
     dados.id_municipio_ocorrencia = '3550308' 
-    -- Filtro 2: Apenas sexo feminino (no SINAN geralmente é 'F' ou '2', adaptamos para pegar ambos ou padronizar)
-    AND (CAST(dados.sexo_paciente AS STRING) = 'F' OR CAST(dados.sexo_paciente AS STRING) = '2')
 """
 
 print("Iniciando o download dos dados do SINAN via Base dos Dados (BigQuery)...")
 try:
     df = bd.read_sql(query=query, billing_project_id=billing_id)
     print(f"Download concluído! Total de registros encontrados: {len(df)}")
-    
+
     # Salvar em CSV na pasta dados
-    df.to_csv(output_file, index=False, encoding='utf-8')
+    df.to_csv(output_file, index=False, encoding="utf-8")
     print(f"Dados salvos com sucesso em: {output_file}")
 except Exception as e:
     print(f"Erro ao executar a query: {e}")
