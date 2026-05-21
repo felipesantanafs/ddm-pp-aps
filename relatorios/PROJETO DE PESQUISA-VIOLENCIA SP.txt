@@ -1,0 +1,53 @@
+PROJETO DE PESQUISA — ADAPTAÇÃO PARA GESTÃO DE POLÍTICAS PÚBLICAS
+
+1. TÍTULO
+Violência contra Mulheres no Município de São Paulo: Diagnóstico Espaço-Temporal e Avaliação de Impacto das Delegacias de Defesa da Mulher (DDM)
+
+2. RESUMO
+Estudos indicam a importância de políticas públicas direcionadas e acessíveis para combater a violência contra a mulher. Embora a literatura ofereça evidências robustas da importância das Delegacias de Defesa da Mulher (DDMs), há necessidade de estudos voltados ao nível intra-municipal para otimizar o planejamento local, especialmente na cidade de São Paulo. Este projeto propõe uma pesquisa estruturada em duas etapas para a cidade de São Paulo. Na primeira etapa (diagnóstica), serão aplicadas técnicas de ciência de dados para análise descritiva espacial e temporal (mapas de calor, sazonalidade e funil da violência: ameaça, lesão corporal e feminicídio) utilizando microdados da Secretaria de Segurança Pública de SP (SSP-SP) agregados por Distrito Policial (DP). Na segunda etapa (causal), será estimada a eficácia das DDMs com regime de 24 horas sobre o aumento de denúncias (acesso institucional) e a redução da letalidade (eficácia), comparando áreas de abrangência de DDMs convencionais com as de plantão ininterrupto. A estratégia empírica utilizará o estimador de Diferenças-em-Diferenças (DiD) intrarregional. Como produtos, serão entregues um Relatório Técnico de gestão e um dashboard interativo desenvolvido em Streamlit, mapeando os resultados para tomada de decisão tática e orçamentária.
+
+Palavras-chave: Violência contra a mulher. São Paulo. Diferenças-em-Diferenças. DDM. Políticas públicas.
+
+3. ENUNCIADO DO PROBLEMA E JUSTIFICATIVA
+3.1 Contextualização do Problema
+A violência contra mulheres é um problema de elevada gravidade e requer respostas rápidas e bem localizadas pelo Estado. Na cidade de São Paulo, o volume de Boletins de Ocorrência relatando ameaças e lesões corporais em contexto doméstico é alto, refletindo a necessidade de capilaridade das políticas de segurança.
+
+Apesar da relevância, muitas análises carecem de uma visão localizada (intra-municipal). A análise do 'funil da violência' (desde a ameaça até o feminicídio) dentro dos bairros da capital paulista permite entender onde estão os gargalos do atendimento. Outra questão crítica é a limitação do horário de atendimento de parte da rede de proteção, já que muitos episódios ocorrem fora do horário comercial (madrugadas e finais de semana).
+
+Assim, levanta-se a seguinte problematização: As DDMs que funcionam 24 hrs têm maior impacto no aumento de registros (redução da subnotificação) e na prevenção de feminicídios em seus bairros de abrangência, em comparação àquelas que funcionam apenas em horário comercial?
+
+3.2 Viés de Notificação e Causalidade Reversa
+Avaliar o impacto apenas pelas denúncias gera viés: uma nova DDM 24h tende a aumentar os registros pois facilita o acesso, reduzindo a cifra oculta. Para resolver isso, o projeto integra os dados de feminicídios, que possuem alta taxa de reporte, funcionando como uma métrica de resultado final neutra para avaliar se a política está efetivamente salvando vidas.
+
+3.3 Interpretação Conjunta dos Resultados
+Se a conversão de uma DDM para 24h em um distrito da capital gera aumento nas queixas de ameaça/lesão (ampliação do acesso) e redução simultânea nas taxas de feminicídio locais, há evidência de que o plantão ininterrupto interrompeu o ciclo de agressões.
+
+4. OBJETIVOS E RESULTADOS ESPERADOS
+4.1 Objetivo Geral
+Realizar um diagnóstico descritivo espaço-temporal da violência contra a mulher no município de São Paulo e avaliar o impacto causal das DDMs 24h (comparadas ao horário comercial) sobre denúncias e feminicídios nos Distritos Policiais, fornecendo subsídios para gestão municipal de segurança.
+
+4.2 Objetivos Específicos
+a) Mapear descritivamente (mapas de calor e coropléticos) a incidência de ameaças, violência doméstica e feminicídios pelos Distritos Policiais de São Paulo;
+b) Identificar padrões temporais descritivos (horas, dias da semana) de maior risco;
+c) Estimar o impacto da conversão/abertura de DDMs 24h sobre denúncias e letalidade intra-município via modelo de Diferenças-em-Diferenças (DiD);
+d) Desenvolver dashboard interativo em Streamlit com mapa da cidade, filtros por crime/horário e simulador de impacto;
+e) Elaborar relatório técnico voltado à gestão.
+
+4.3 Resultados esperados e produtos
+1) Relatório Técnico com o diagnóstico focado em São Paulo; 2) Dashboard Interativo em Streamlit; 3) Base de Dados georreferenciada/agregada por DP da capital paulista.
+
+5. METODOLOGIA
+5.1 ETAPA I — Ciência de Dados e Análise Descritiva
+Os dados serão estruturados integrando fontes focadas no nível distrital:
+- SSP-SP: Microdados de BOs (ameaça, lesão corporal, feminicídio) na cidade de SP;
+- Fundação SEADE: Covariáveis sociodemográficas por distrito (renda, vulnerabilidade);
+- Histórico de DDMs (SSP-SP): Data de inauguração e status de funcionamento (comercial vs 24h).
+A análise espacial será feita via mapas de densidade (Heatmaps) e visualizações de evolução temporal simples (séries de tempo e gráficos de barra), substituindo modelos espaciais complexos para focar em inteligência acionável e leitura facilitada por gestores.
+
+5.2 ETAPA II — Modelo Causal (Avaliação de Política Pública)
+Utilização de modelo de Diferenças-em-Diferenças (DiD). O modelo comparará os Distritos Policiais tratados (que passaram a contar com DDM 24h) com os de controle (DDMs convencionais ou ausência de especializadas) ao longo do tempo. Será analisado o canal de acesso (aumento de B.O.s de ameaça/lesão) e o canal de letalidade (redução de feminicídios). O pareamento prévio (Matching) de distritos com características similares (SEADE) garantirá a validade dos controles.
+
+6. PLANO DE ATIVIDADES E CRONOGRAMA
+• Mês 1: Coleta dos microdados da SSP-SP e SEADE, estruturação da base no nível de Distritos Policiais, e elaboração da análise descritiva espaço-temporal (Mapas e Funil da Violência).
+• Mês 2: Pareamento de distritos e estimação do modelo DiD intra-municipal.
+• Mês 3: Construção do dashboard em Streamlit focado no mapa da capital e elaboração do Relatório Técnico para gestão pública.
