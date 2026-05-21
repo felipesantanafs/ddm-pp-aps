@@ -4,6 +4,8 @@ import os
 import sys
 
 sys.path.append(os.path.dirname(__file__))
+# O arquivo 'bd_config.py' é uma configuração local contendo o ID de faturamento (Billing ID) do Google Cloud.
+# Este arquivo é mantido localmente e está no .gitignore para evitar vazamento de credenciais.
 from bd_config import BILLING_ID
 
 # Substitua pelo seu ID de projeto do Google Cloud
