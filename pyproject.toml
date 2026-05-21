@@ -1,0 +1,66 @@
+[project]
+name = "deams-pp"
+version = "0.1.0"
+description = "Álcool e Violência Doméstica contra Mulheres no Brasil: Diagnóstico Espaço-Temporal e Avaliação de Impacto Causal das DEAMs"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Felipe Santana" },
+]
+keywords = ["violencia-domestica", "deam", "did", "politicas-publicas", "feminicidio"]
+
+# ---------- Dependências ----------
+dependencies = [
+    # Core — ETL e manipulação de dados
+    "pandas>=2.0",
+    "openpyxl>=3.1",          # Leitura/escrita de .xlsx
+
+    # Análise espacial (Etapa 1 — Diagnóstico)
+    "geopandas>=0.14",
+    "libpysal>=4.9",          # Índice de Moran (Global/Local — LISA)
+    "shapely>=2.0",
+
+    # Estatística circular (Etapa 1 — Diagnóstico)
+    "astropy>=6.0",           # circular stats via astropy.stats
+
+    # Econometria e avaliação de impacto (Etapa 2 — Causal)
+    "statsmodels>=0.14",
+    "linearmodels>=5.0",      # Painel, IV, DiD
+    "scikit-learn>=1.4",      # Propensity Score Matching
+
+    # Visualização e dashboard (Produto Final)
+    "plotly>=5.18",
+    "streamlit>=1.30",
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+
+    # Utilitários
+    "python-docx>=1.0",       # Leitura de .docx (relatórios)
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff",
+    "ipykernel",
+    "jupyter",
+    "pre-commit",
+]
+
+# ---------- Build System ----------
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends._legacy:_Backend"
+
+# ---------- Ferramentas ----------
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"

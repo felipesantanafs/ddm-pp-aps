@@ -1,0 +1,70 @@
+# ===========================
+# Python
+# ===========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# ===========================
+# Virtual Environments
+# ===========================
+.venv/
+venv/
+ENV/
+env/
+.env
+
+# ===========================
+# Distribution / Packaging
+# ===========================
+build/
+dist/
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+
+# ===========================
+# IDEs e Editores
+# ===========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ===========================
+# Jupyter Notebook
+# ===========================
+.ipynb_checkpoints/
+
+# ===========================
+# OS
+# ===========================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ===========================
+# Excel — arquivos temporários
+# ===========================
+~$*.xlsx
+~$*.xls
+~$*.xlsm
+
+# ===========================
+# Dados pesados (opcional)
+# Descomente se quiser ignorar
+# as bases brutas do repositório
+# ===========================
+# dados/SIPCV_2026.xlsx
+# dados/Feminicidio_2015_2022.xlsx
+
+# ===========================
+# Logs e cache
+# ===========================
+*.log
+.cache/
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
