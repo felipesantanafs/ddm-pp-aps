@@ -172,6 +172,6 @@ Os scripts em Python dentro da pasta `codes/` já possuem as *queries* SQL otimi
 - [x] Criação das *queries* otimizadas para extração SIM/SINAN via Base dos Dados
 - [x] Extração dos microdados SIM (7.554 registros) e SINAN (108.427 registros)
 - [x] Pré-processamento das bases SSP-SP (SIPCV e Feminicídio 2015-2022)
-- [ ] Construção do Funil da Violência e EDA Espaço-Temporal
+- [x] Construção do Funil da Violência e EDA Espaço-Temporal
 - [ ] Estimação do modelo DiD
 - [ ] Construção do Dashboard Interativo (Streamlit)
