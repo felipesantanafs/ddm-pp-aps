@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from utils.data_loader import load_sinan_cnes, load_sim
 from utils.charts import apply_theme, COLORS, PALETTE, PALETTE_WARM, metric_card_css, render_metric, section_header
 
-st.set_page_config(page_title="Séries Temporais | DEAM-PP", page_icon="📈", layout="wide")
+st.set_page_config(page_title="Séries Temporais | DDM", page_icon="📈", layout="wide")
 st.markdown(metric_card_css(), unsafe_allow_html=True)
 
 st.markdown("# 📈 Séries Temporais Detalhadas")
@@ -55,7 +55,7 @@ st.markdown(section_header("📅 Série Mensal de Notificações (SINAN)"), unsa
 
 # Agregar por mês
 df_filt_valid = df_filt[df_filt['data_ocorrencia'].notna()].copy()
-monthly = df_filt_valid.set_index('data_ocorrencia').resample('M').agg(
+monthly = df_filt_valid.set_index('data_ocorrencia').resample('ME').agg(
     total=('ano', 'count'),
     violencia_fisica=('ocorreu_violencia_fisica', 'sum'),
     ameaca=('meio_ameaca', 'sum'),

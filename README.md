@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🔬 DDM-PP — Avaliação de Impacto das Delegacia de Defesa da Mulher
+# 🔬 Delegacias de Defesa da Mulher — Avaliação de Impacto
 
 **Violência contra Mulheres no Município de São Paulo:**
 *Diagnóstico Espaço-Temporal e Avaliação de Impacto das DDMs*
@@ -11,7 +11,7 @@
 
 ---
 
-*Projeto de pesquisa focado na gestão de políticas públicas no município de São Paulo.*
+*Projeto de pesquisa focado na avaliação de políticas sociais no município de São Paulo.*
 
 </div>
 
@@ -34,7 +34,7 @@
 
 Este repositório contém o código-fonte, dados e relatórios do projeto de pesquisa que investiga a **eficácia das Delegacias de Defesa da Mulher (DDMs) com funcionamento 24 horas no município de São Paulo**.
 
-O estudo combina **ciência de dados descritiva** (mapas de calor territoriais e funil da violência) com **avaliação de impacto causal** (Diferenças-em-Diferenças intra-municipal), produzindo evidências acionáveis para subsidiar a gestão de políticas públicas e otimizar a rede de proteção à mulher na capital paulista.
+O estudo combina **ciência de dados descritiva** (mapas de calor territoriais e funil da violência) com **avaliação de impacto causal** (Diferenças-em-Diferenças intra-municipal), produzindo evidências acionáveis para subsidiar a avaliação de políticas sociais e otimizar a rede de proteção à mulher na capital paulista.
 
 ---
 

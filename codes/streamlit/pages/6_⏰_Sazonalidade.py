@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from utils.data_loader import load_sinan_cnes, load_ssp_feminicidio
 from utils.charts import apply_theme, COLORS, PALETTE, metric_card_css, render_metric, section_header
 
-st.set_page_config(page_title="Sazonalidade | DEAM-PP", page_icon="⏰", layout="wide")
+st.set_page_config(page_title="Sazonalidade | DDM", page_icon="⏰", layout="wide")
 st.markdown(metric_card_css(), unsafe_allow_html=True)
 
 st.markdown("# ⏰ Sazonalidade e Horários")

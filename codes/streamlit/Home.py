@@ -1,7 +1,7 @@
 """
-🔬 DEAM-PP — Dashboard de Análise Exploratória
+🔬 DDM — Dashboard de Análise Exploratória
 Violência contra Mulheres no Município de São Paulo
-FEA-USP | Gestão de Políticas Públicas
+FEA-USP | Avaliação de Políticas Sociais
 
 Arquivo principal do Streamlit (multipage).
 """
@@ -11,7 +11,7 @@ import os
 
 # ─── Configuração da Página ──────────────────────────────────────────
 st.set_page_config(
-    page_title="DEAM-PP | Análise Exploratória — Violência contra Mulheres em SP",
+    page_title="DDM | Análise Exploratória — Violência contra Mulheres em SP",
     page_icon="🔬",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -146,13 +146,13 @@ st.markdown("""
 # ─── Sidebar ─────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
-    # 🔬 DEAM-PP
+    # 🔬 DDM
     ### Análise Exploratória
     ---
     **Violência contra Mulheres**
     *Município de São Paulo*
 
-    FEA-USP | Gestão de Políticas Públicas
+    FEA-USP | Avaliação de Políticas Sociais
     """)
 
     st.markdown("---")
@@ -180,7 +180,7 @@ with st.sidebar:
     """)
 
     st.markdown("---")
-    st.caption("© 2026 DEAM-PP | FEA-USP")
+    st.caption("© 2026 DDM | FEA-USP")
 
 
 # ─── Conteúdo Principal (Home) ───────────────────────────────────────

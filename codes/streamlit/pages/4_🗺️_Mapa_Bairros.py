@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from utils.data_loader import load_sinan_cnes, load_ssp_feminicidio
 from utils.charts import apply_theme, COLORS, metric_card_css, section_header
 
-st.set_page_config(page_title="Mapa de Bairros | DEAM-PP", page_icon="🗺️", layout="wide")
+st.set_page_config(page_title="Mapa de Bairros | DDM", page_icon="🗺️", layout="wide")
 st.markdown(metric_card_css(), unsafe_allow_html=True)
 
 st.markdown("# 🗺️ Mapa de Incidência por Bairros")

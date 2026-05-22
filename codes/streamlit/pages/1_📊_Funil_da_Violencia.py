@@ -11,7 +11,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from utils.data_loader import load_funil, load_sinan_cnes, load_sim
 from utils.charts import apply_theme, COLORS, PALETTE, metric_card_css, render_metric, section_header
 
-st.set_page_config(page_title="Funil da Violência | DEAM-PP", page_icon="📊", layout="wide")
+st.set_page_config(page_title="Funil da Violência | DDM", page_icon="📊", layout="wide")
 
 st.markdown("""
 <style>

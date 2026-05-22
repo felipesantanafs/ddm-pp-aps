@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from utils.data_loader import load_sinan_cnes, load_sim, RACA_PACIENTE_MAP, LOCAL_OCORRENCIA_MAP
 from utils.charts import apply_theme, COLORS, PALETTE, PALETTE_WARM, metric_card_css, render_metric, section_header
 
-st.set_page_config(page_title="Perfil das Vítimas | DEAM-PP", page_icon="👤", layout="wide")
+st.set_page_config(page_title="Perfil das Vítimas | DDM", page_icon="👤", layout="wide")
 st.markdown(metric_card_css(), unsafe_allow_html=True)
 
 st.markdown("# 👤 Perfil das Vítimas")
