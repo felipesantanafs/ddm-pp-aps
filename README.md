@@ -110,10 +110,21 @@ deams-pp-aps/
 │   ├── 📂 analise_dados/           # Análise exploratória e visualizações
 │   │   └── eda_funil_violencia.py  # Análise do Funil da Violência e geração de gráficos
 │   │
-│   ├── 📂 streamlit/               # Dashboard Interativo (Fase Futura)
-│   │   └── .gitkeep
+│   ├── 📂 streamlit/               # Dashboard Interativo Premium (FEA-USP)
+│   │   ├── Home.py                 # Arquivo de entrada do painel principal
+│   │   ├── 📂 assets/              # Plano de fundo minimalista e bases espaciais (GeoJSON)
+│   │   ├── 📂 utils/               # Funções de carregamento rápido e geradores de gráficos Plotly
+│   │   └── 📂 pages/               # Páginas estruturadas para navegação (1 a 8)
+│   │       ├── 1_📊_Funil_da_Violencia.py
+│   │       ├── 2_📈_Series_Temporais.py
+│   │       ├── 3_🏢_Delegacias_Bairros.py
+│   │       ├── 4_🗺️_Mapa_Bairros.py
+│   │       ├── 5_👤_Perfil_Vitimas.py
+│   │       ├── 6_⏰_Sazonalidade.py
+│   │       ├── 7_🔍_Feminicidio_SSP.py
+│   │       └── 8_🚨_Analise_DDMs.py
 │   │
-│   └── 📂 inferencia_causal/       # Estimação do modelo econométrico DiD (Fase Futura)
+│   └── 📂 inferencia_causal/       # Estimação do modelo econométrico DiD (Próxima Etapa)
 │       └── .gitkeep
 │
 ├── 📂 dados/                       # Armazenamento estruturado de fontes e consolidações
@@ -191,6 +202,24 @@ Os scripts em Python dentro da pasta `codes/extracao_filtragem/` já possuem as 
 
 ---
 
+## 🖥️ Dashboard Interativo (Streamlit)
+
+A Fase 1 está acoplada a um painel analítico dinâmico desenvolvido no Streamlit com uma identidade visual premium adaptada às cores da **FEA-USP** (azul marinho e elementos de alta visibilidade/contraste).
+
+### Como executar localmente:
+
+1. Instale as dependências listadas no `requirements.txt`:
+   ```bash
+   pip install -r requirements.txt
+   ```
+2. Inicialize o dashboard a partir da raiz do repositório:
+   ```bash
+   streamlit run codes/streamlit/Home.py
+   ```
+3. O painel abrirá automaticamente em `http://localhost:8501`.
+
+---
+
 ## 🗺️ Roadmap
 
 - [x] Reestruturação do escopo do projeto (Foco em São Paulo e DiD Intra-municipal)
@@ -198,5 +227,6 @@ Os scripts em Python dentro da pasta `codes/extracao_filtragem/` já possuem as 
 - [x] Extração dos microdados SIM (7.554 registros) e SINAN (108.427 registros)
 - [x] Pré-processamento das bases SSP-SP (SIPCV e Feminicídio 2015-2022)
 - [x] Construção do Funil da Violência e EDA Espaço-Temporal
-- [ ] Estimação do modelo DiD
-- [ ] Construção do Dashboard Interativo (Streamlit)
+- [x] Construção do Dashboard Interativo Premium no Streamlit (8 abas funcionais com mapas e sazonalidade)
+- [ ] Estimação do modelo econométrico causal DiD e pareamento (Propensity Score Matching)
+
