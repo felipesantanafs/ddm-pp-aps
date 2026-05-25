@@ -147,7 +147,7 @@ with col2:
 st.markdown("---")
 st.markdown(section_header("📍 Densidade Territorial e Zonas Críticas (Hexagon Binning)"), unsafe_allow_html=True)
 
-df_geo = df_filt[df_filt['latitude'].notna() & df_filt['longitude'].notna()].copy()
+df_geo = df_filt[df_filt['latitude'].notna() & df_filt['longitude'].notna()][['latitude', 'longitude']].copy()
 
 # Cores baseadas no print de referência: do azul (baixa) para o vermelho (alta)
 color_range = [
