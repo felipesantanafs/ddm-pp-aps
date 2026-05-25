@@ -143,92 +143,71 @@ with col2:
     apply_theme(fig_hora, height=400, show_legend=False)
     st.plotly_chart(fig_hora, use_container_width=True)
 
-# ─── Gráfico 3: Evolução Geográfica (GIF em Looping) ───────────────────
+# ─── Gráfico 3: Concentração de Casos (Hexagon Map) ────────────────────
 st.markdown("---")
-st.markdown(section_header("📍 Evolução Geográfica da Taxa de Encaminhamento DDM (Base 🏥 SINAN)"), unsafe_allow_html=True)
+st.markdown(section_header("📍 Densidade Territorial e Zonas Críticas (Hexagon Binning)"), unsafe_allow_html=True)
 
-# Preparar dados com lat/lon e agregar por ano e bairro
 df_geo = df_filt[df_filt['latitude'].notna() & df_filt['longitude'].notna()].copy()
-df_bairro_ano = df_geo.groupby(['ano', 'bairro']).agg(
-    total=('encaminhamento_delegacia_mulher', 'count'),
-    ddm=('encaminhamento_delegacia_mulher', 'sum'),
-    lat=('latitude', 'median'),
-    lon=('longitude', 'median')
-).reset_index()
 
-df_bairro_ano['taxa_ddm'] = (df_bairro_ano['ddm'] / df_bairro_ano['total']) * 100
-df_bairro_ano = df_bairro_ano[df_bairro_ano['total'] >= 5] # Filtrar ruído por ano
+# Cores baseadas no print de referência: do azul (baixa) para o vermelho (alta)
+color_range = [
+    [224, 224, 224], # Cinza (Baixa)
+    [52, 152, 219],  # Azul (Relevante)
+    [46, 204, 113],  # Verde (Média)
+    [241, 196, 15],  # Amarelo (Alta)
+    [230, 126, 34],  # Laranja (Centro)
+    [231, 76, 60],   # Vermelho (Subcentro/Principal)
+    [142, 68, 173]   # Roxo (Máxima)
+]
 
-# Ordenar por ano para a animação funcionar corretamente
-df_bairro_ano = df_bairro_ano.sort_values(['ano', 'bairro'])
+import pydeck as pdk
 
-fig_map = px.scatter_mapbox(
-    df_bairro_ano,
-    lat="lat", lon="lon",
-    size="total", color="taxa_ddm",
-    animation_frame="ano",
-    hover_name="bairro",
-    hover_data={"ano": False, "lat": False, "lon": False, "total": True, "taxa_ddm": ':.1f'},
-    color_continuous_scale=[(0, COLORS['danger']), (0.5, COLORS['warning']), (1, COLORS['primary'])],
-    range_color=[0, df_bairro_ano['taxa_ddm'].quantile(0.95)],
-    size_max=30,
+# Camada de delimitação física dos bairros
+geojson_layer = pdk.Layer(
+    "GeoJsonLayer",
+    data="https://raw.githubusercontent.com/codigourbano/distritos-sp/master/distritos-sp.geojson",
+    opacity=0.4,
+    stroked=True,
+    filled=False,
+    get_line_color=[255, 255, 255, 100],
+    line_width_min_pixels=1,
+)
+
+# Camada hexagonal 2D para densidade
+hexagon_layer = pdk.Layer(
+    "HexagonLayer",
+    data=df_geo,
+    get_position=["longitude", "latitude"],
+    radius=600, # Raio do hexágono em metros (ajuste de granularidade)
+    pickable=True,
+    extruded=False, # Gráfico 2D conforme referência do usuário
+    color_range=color_range,
+    coverage=0.9,
+    auto_highlight=True,
+)
+
+view_state = pdk.ViewState(
+    longitude=-46.6333,
+    latitude=-23.5505,
     zoom=9.5,
-    center={"lat": -23.5505, "lon": -46.6333},
-    mapbox_style="carto-darkmatter"
+    pitch=0, # Mapa reto (2D)
+    bearing=0
 )
 
-# Ocultar botões nativos do Plotly (Play/Pause) e Slider para criar um efeito de "GIF limpo"
-fig_map.update_layout(
-    margin={"r":0,"t":0,"l":0,"b":0},
-    paper_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='rgba(0,0,0,0)',
-    updatemenus=[dict(visible=False)],
-    sliders=[dict(visible=False)]
+r = pdk.Deck(
+    layers=[geojson_layer, hexagon_layer],
+    initial_view_state=view_state,
+    map_style="mapbox://styles/mapbox/dark-v10",
+    tooltip={"text": "Densidade de Ocorrências: {elevationValue}"}
 )
 
-# Renderizar como HTML e injetar JavaScript para criar o Looping Automático (Efeito GIF)
-import streamlit.components.v1 as components
-
-# Coletar os anos únicos (frames)
-frames_list = [str(y) for y in sorted(df_bairro_ano['ano'].unique())]
-
-html_str = fig_map.to_html(include_plotlyjs="require", full_html=False)
-
-# Código JS inovador para forçar o Plotly a animar em loop infinito sem botões
-custom_js = f"""
-<script>
-    setTimeout(function() {{
-        var graphDivs = document.querySelectorAll('.plotly-graph-div');
-        if(graphDivs.length > 0) {{
-            var gd = graphDivs[0];
-            var frames = {frames_list};
-            var currentFrame = 0;
-            
-            // Inicia o loop de animação
-            setInterval(function() {{
-                Plotly.animate(gd, [frames[currentFrame]], {{
-                    mode: 'immediate',
-                    transition: {{duration: 500, easing: 'cubic-in-out'}},
-                    frame: {{duration: 1500, redraw: true}}
-                }});
-                
-                // Atualizar o título dinamicamente para mostrar o ano
-                Plotly.relayout(gd, {{ title: '<b>Ano: ' + frames[currentFrame] + '</b> - Demanda vs Encaminhamento DDM' }});
-                
-                currentFrame = (currentFrame + 1) % frames.length;
-            }}, 1800); // Espera o frame atual terminar antes de chamar o próximo
-        }}
-    }}, 1000);
-</script>
-"""
-
-# Renderiza o mapa interativo em loop no Streamlit
-components.html(html_str + custom_js, height=650)
+st.pydeck_chart(r, use_container_width=True)
 
 st.markdown("""
 <div class="insight-box">
-    <strong>Leitura da Animação:</strong> O mapa acima funciona como um <i>GIF espacial infinito</i> (tecnologia injetada via JS). 
-    Você pode dar zoom e interagir enquanto ele anima! Bairros com círculos grandes (muitas notificações) e cor vermelha/amarela (baixa taxa de encaminhamento) 
-    são potenciais territórios críticos. A animação revela se a presença institucional melhorou ou estagnou ao longo do tempo.
+    <strong>Leitura do Mapa Hexagonal:</strong> Diferente de plotar ponto a ponto, esta visualização 
+    agrupa as ocorrências em "bins" hexagonais uniformes (tecnologia H3), eliminando a distorção visual de pontos sobrepostos. 
+    As linhas brancas ao fundo desenham a <strong>delimitação física oficial dos distritos de São Paulo</strong>, permitindo ver exatamente 
+    quais bairros abrigam os "centros e subcentros" de alta concentração de violência contra a mulher.
 </div>
 """, unsafe_allow_html=True)
