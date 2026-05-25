@@ -10,11 +10,15 @@ import os
 DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'dados'))
 
 
-@st.cache_data(ttl=3600, show_spinner="Carregando dados do SINAN + CNES...")
+@st.cache_data(ttl=3600, show_spinner="Carregando dados do SINAN + CNES (2015-2019)...")
 def load_sinan_cnes() -> pd.DataFrame:
-    """Carrega a base integrada SINAN + CNES (108k registros)."""
+    """Carrega a base integrada SINAN + CNES filtrada para o período de 2015 a 2019 (107.212 registros)."""
     path = os.path.join(DATA_DIR, 'sinan', 'sinan_cnes_merged.csv')
     df = pd.read_csv(path, low_memory=False)
+
+    # Filtrar para o período de 2015 a 2019
+    if 'ano' in df.columns:
+        df = df[(df['ano'] >= 2015) & (df['ano'] <= 2019)]
 
     # Converter colunas binárias para numérico
     binary_cols = [
@@ -48,40 +52,20 @@ def load_sinan_cnes() -> pd.DataFrame:
     return df
 
 
-@st.cache_data(ttl=3600, show_spinner="Carregando dados do SIM...")
+@st.cache_data(ttl=3600, show_spinner="Carregando dados do SIM (2015-2019)...")
 def load_sim() -> pd.DataFrame:
-    """Carrega a base de feminicídios do SIM/DataSUS (7.554 registros)."""
+    """Carrega a base de feminicídios do SIM/DataSUS filtrada para 2015-2019 (525 registros)."""
     path = os.path.join(DATA_DIR, 'sim', 'sim_feminicidios_sp.csv')
     df = pd.read_csv(path)
+    
+    # Filtrar para o período de 2015 a 2019
+    if 'ano' in df.columns:
+        df = df[(df['ano'] >= 2015) & (df['ano'] <= 2019)]
+
     df['data_obito'] = pd.to_datetime(df['data_obito'], errors='coerce')
     df['idade'] = pd.to_numeric(df['idade'], errors='coerce')
     return df
 
-
-@st.cache_data(ttl=3600, show_spinner="Carregando dados da SSP (Feminicídio)...")
-def load_ssp_feminicidio() -> pd.DataFrame:
-    """Carrega a base de feminicídios filtrada da SSP (232 registros)."""
-    path = os.path.join(DATA_DIR, 'ssp', 'dados_feminicidio.xlsx')
-    df = pd.read_excel(path)
-    df['DATA_FATO'] = pd.to_datetime(df['DATA_FATO'], errors='coerce')
-    df['IDADE_PESSOA'] = pd.to_numeric(df['IDADE_PESSOA'], errors='coerce')
-    df['LATITUDE'] = pd.to_numeric(df['LATITUDE'], errors='coerce')
-    df['LONGITUDE'] = pd.to_numeric(df['LONGITUDE'], errors='coerce')
-
-    # Extrair ano
-    if 'ANO ESTATISTICA' in df.columns:
-        df['ano'] = pd.to_numeric(df['ANO ESTATISTICA'], errors='coerce')
-    elif 'DATA_FATO' in df.columns:
-        df['ano'] = df['DATA_FATO'].dt.year
-
-    return df
-
-
-@st.cache_data(ttl=3600, show_spinner="Carregando dados do CNES...")
-def load_cnes() -> pd.DataFrame:
-    """Carrega o dicionário de geolocalização do CNES."""
-    path = os.path.join(DATA_DIR, 'cnes', 'cnes_sp_geolocalizado.csv')
-    return pd.read_csv(path)
 
 
 @st.cache_data(ttl=3600, show_spinner="Carregando funil consolidado...")

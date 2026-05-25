@@ -10,7 +10,7 @@ import numpy as np
 import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from utils.data_loader import load_sinan_cnes, load_ssp_feminicidio
+from utils.data_loader import load_sinan_cnes
 from utils.charts import apply_theme, COLORS, PALETTE, metric_card_css, render_metric, section_header
 
 st.set_page_config(page_title="Sazonalidade | DDM", page_icon="⏰", layout="wide")
@@ -22,7 +22,6 @@ st.markdown("---")
 
 # ─── Dados ────────────────────────────────────────────────────────────
 df_sinan = load_sinan_cnes()
-df_fem = load_ssp_feminicidio()
 
 ano_range = st.slider("Período SINAN", 2015, 2019, (2015, 2019), key="saz_ano")
 df_filt = df_sinan[
@@ -71,44 +70,64 @@ st.markdown("<br>", unsafe_allow_html=True)
 # ─── Gráfico 1: Distribuição Horária SINAN ───────────────────────────
 st.markdown(section_header("🕐 Distribuição Horária das Ocorrências (SINAN)"), unsafe_allow_html=True)
 
-hora_counts = df_filt.groupby('hora').size().reset_index(name='total')
-hora_counts = hora_counts.sort_values('hora')
+col_chart, col_summary = st.columns([3, 1])
 
-# Criar cores: vermelho para fora do horário comercial, azul para dentro
-bar_colors = []
-for h in hora_counts['hora']:
-    if h < 8 or h >= 18:
-        bar_colors.append(COLORS['danger'])
-    else:
-        bar_colors.append(COLORS['secondary'])
+with col_chart:
+    hora_counts = df_filt.groupby('hora').size().reset_index(name='total')
+    hora_counts = hora_counts.sort_values('hora')
 
-fig1 = go.Figure()
-fig1.add_trace(go.Bar(
-    x=hora_counts['hora'],
-    y=hora_counts['total'],
-    marker_color=bar_colors,
-    hovertemplate='<b>%{x}h</b><br>Ocorrências: %{y:,.0f}<extra></extra>',
-))
+    # Criar cores: vermelho para fora do horário comercial, azul para dentro
+    bar_colors = []
+    for h in hora_counts['hora']:
+        if h < 8 or h >= 18:
+            bar_colors.append(COLORS['danger'])
+        else:
+            bar_colors.append(COLORS['secondary'])
 
-# Faixas de horário comercial
-fig1.add_vrect(x0=-0.5, x1=7.5, fillcolor=COLORS['danger'], opacity=0.08, line_width=0,
-               annotation_text="Fora do expediente", annotation_position="top left",
-               annotation_font=dict(color=COLORS['danger'], size=11))
-fig1.add_vrect(x0=17.5, x1=23.5, fillcolor=COLORS['danger'], opacity=0.08, line_width=0,
-               annotation_text="Fora do expediente", annotation_position="top right",
-               annotation_font=dict(color=COLORS['danger'], size=11))
-fig1.add_vrect(x0=7.5, x1=17.5, fillcolor=COLORS['success'], opacity=0.05, line_width=0,
-               annotation_text="Horário Comercial", annotation_position="top",
-               annotation_font=dict(color=COLORS['success'], size=11))
+    fig1 = go.Figure()
+    fig1.add_trace(go.Bar(
+        x=hora_counts['hora'],
+        y=hora_counts['total'],
+        marker_color=bar_colors,
+        hovertemplate='<b>%{x}h</b><br>Ocorrências: %{y:,.0f}<extra></extra>',
+    ))
 
-fig1.update_layout(
-    title="Distribuição Horária — Notificações de Violência",
-    xaxis_title="Hora do Dia",
-    yaxis_title="Nº de Ocorrências",
-    xaxis=dict(tickmode='linear', dtick=1),
-)
-apply_theme(fig1, height=450, show_legend=False)
-st.plotly_chart(fig1, use_container_width=True)
+    # Faixas de horário comercial
+    fig1.add_vrect(x0=-0.5, x1=7.5, fillcolor=COLORS['danger'], opacity=0.08, line_width=0,
+                   annotation_text="Fora do expediente", annotation_position="top left",
+                   annotation_font=dict(color=COLORS['danger'], size=11))
+    fig1.add_vrect(x0=17.5, x1=23.5, fillcolor=COLORS['danger'], opacity=0.08, line_width=0,
+                   annotation_text="Fora do expediente", annotation_position="top right",
+                   annotation_font=dict(color=COLORS['danger'], size=11))
+    fig1.add_vrect(x0=7.5, x1=17.5, fillcolor=COLORS['success'], opacity=0.05, line_width=0,
+                   annotation_text="Horário Comercial", annotation_position="top",
+                   annotation_font=dict(color=COLORS['success'], size=11))
+
+    fig1.update_layout(
+        title="Distribuição Horária — Notificações de Violência",
+        xaxis_title="Hora do Dia",
+        yaxis_title="Nº de Ocorrências",
+        xaxis=dict(tickmode='linear', dtick=1),
+    )
+    apply_theme(fig1, height=450, show_legend=False)
+    st.plotly_chart(fig1, use_container_width=True)
+
+with col_summary:
+    st.markdown("#### Resumo Horário")
+    st.markdown(f"""
+    | Faixa | % |
+    |-------|---|
+    | 🌙 Madrugada (0h–6h) | **{pct_madrugada:.1f}%** |
+    | 🌅 Manhã (6h–12h) | **{(len(df_filt[(df_filt['hora']>=6)&(df_filt['hora']<12)])/total_com_hora*100):.1f}%** |
+    | ☀️ Tarde (12h–18h) | **{(len(df_filt[(df_filt['hora']>=12)&(df_filt['hora']<18)])/total_com_hora*100):.1f}%** |
+    | 🌃 Noite (18h–0h) | **{(len(df_filt[(df_filt['hora']>=18)])/total_com_hora*100):.1f}%** |
+
+    ---
+
+    🔴 Fora do horário comercial: **{pct_fora:.1f}%**
+
+    🟢 Dentro do horário comercial: **{100-pct_fora:.1f}%**
+    """)
 
 # ─── Gráfico 2: Heatmap Hora x Mês ──────────────────────────────────
 st.markdown(section_header("📅 Heatmap: Hora × Mês"), unsafe_allow_html=True)
@@ -145,65 +164,6 @@ fig2.update_layout(
 )
 apply_theme(fig2, height=550, show_legend=False)
 st.plotly_chart(fig2, use_container_width=True)
-
-# ─── Gráfico 3: Horário Feminicídios SSP ─────────────────────────────
-st.markdown(section_header("💀 Distribuição Horária — Feminicídios (SSP)"), unsafe_allow_html=True)
-
-col_l, col_r = st.columns([3, 1])
-
-with col_l:
-    if 'HORA_FATO' in df_fem.columns:
-        df_fem_h = df_fem[df_fem['HORA_FATO'].notna()].copy()
-        df_fem_h['hora_fem'] = pd.to_datetime(df_fem_h['HORA_FATO'], format='%H:%M:%S', errors='coerce').dt.hour
-        # Tentar também formato textual
-        mask_text = df_fem_h['hora_fem'].isna()
-        if mask_text.any():
-            # Tratar "DE MADRUGADA" e similares
-            df_fem_h.loc[df_fem_h['HORA_FATO'].str.contains('MADRUGADA', case=False, na=False), 'hora_fem'] = 3
-
-        df_fem_h = df_fem_h[df_fem_h['hora_fem'].notna()]
-
-        if len(df_fem_h) > 0:
-            hora_fem = df_fem_h.groupby('hora_fem').size().reset_index(name='total')
-
-            bar_colors_fem = [COLORS['danger'] if (h < 8 or h >= 18) else COLORS['secondary'] for h in hora_fem['hora_fem']]
-
-            fig3 = go.Figure()
-            fig3.add_trace(go.Bar(
-                x=hora_fem['hora_fem'],
-                y=hora_fem['total'],
-                marker_color=bar_colors_fem,
-                hovertemplate='<b>%{x}h</b><br>Feminicídios: %{y}<extra></extra>',
-            ))
-            fig3.update_layout(
-                title="Horário dos Feminicídios (SSP — São Paulo)",
-                xaxis_title="Hora do Dia", yaxis_title="Nº de Casos",
-                xaxis=dict(tickmode='linear', dtick=1),
-            )
-            apply_theme(fig3, height=400, show_legend=False)
-            st.plotly_chart(fig3, use_container_width=True)
-        else:
-            st.info("Horários dos feminicídios SSP não disponíveis em formato numérico.")
-    else:
-        st.info("Coluna HORA_FATO não encontrada na base SSP.")
-
-with col_r:
-    st.markdown("#### Resumo Horário")
-    st.markdown(f"""
-    | Faixa | % |
-    |-------|---|
-    | 🌙 Madrugada (0h–6h) | **{pct_madrugada:.1f}%** |
-    | 🌅 Manhã (6h–12h) | **{(len(df_filt[(df_filt['hora']>=6)&(df_filt['hora']<12)])/total_com_hora*100):.1f}%** |
-    | ☀️ Tarde (12h–18h) | **{(len(df_filt[(df_filt['hora']>=12)&(df_filt['hora']<18)])/total_com_hora*100):.1f}%** |
-    | 🌃 Noite (18h–0h) | **{(len(df_filt[(df_filt['hora']>=18)])/total_com_hora*100):.1f}%** |
-
-    ---
-
-    🔴 Fora do horário comercial: **{pct_fora:.1f}%**
-
-    🟢 Dentro do horário comercial: **{100-pct_fora:.1f}%**
-    """)
-
 # ─── Gráfico 4: Sazonalidade Mensal ──────────────────────────────────
 st.markdown(section_header("📆 Sazonalidade Mensal"), unsafe_allow_html=True)
 

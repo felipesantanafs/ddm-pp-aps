@@ -164,9 +164,8 @@ with st.sidebar:
     ---
 
     #### 📊 Bases de Dados
-    - 🏥 SINAN + CNES (108k reg.)
-    - ⚰️ SIM/DataSUS (7.554 óbitos)
-    - 🚔 SSP Feminicídios (232 reg.)
+    - 🏥 SINAN + CNES (107.212 reg.)
+    - ⚰️ SIM/DataSUS (525 óbitos)
     - 📋 Funil Consolidado
 
     ---
@@ -198,13 +197,13 @@ st.markdown(metric_card_css(), unsafe_allow_html=True)
 col1, col2, col3, col4 = st.columns(4)
 with col1:
     st.markdown(render_metric(
-        "Notificações SINAN", "108.427",
-        "2009–2019", "neutral"
+        "Notificações SINAN", "107.212",
+        "2015–2019", "neutral"
     ), unsafe_allow_html=True)
 with col2:
     st.markdown(render_metric(
-        "Feminicídios (SIM)", "7.554",
-        "1996–2022", "neutral"
+        "Feminicídios (SIM)", "525",
+        "2015–2019", "neutral"
     ), unsafe_allow_html=True)
 with col3:
     st.markdown(render_metric(
@@ -213,7 +212,7 @@ with col3:
     ), unsafe_allow_html=True)
 with col4:
     st.markdown(render_metric(
-        "Geolocalização", "82,8%",
+        "Geolocalização", "83,7%",
         "Lat/Long SINAN+CNES", "neutral"
     ), unsafe_allow_html=True)
 
@@ -253,11 +252,12 @@ with col_right:
     |--------|----------|
     | 📊 **Funil da Violência** | Cascata: Ameaça → Lesão → Feminicídio |
     | 📈 **Séries Temporais** | Evolução mensal e anual detalhada |
-    | 🏢 **Delegacias & Bairros** | Rankings e concentrações |
-    | 🗺️ **Mapa de Calor** | Visualização espacial interativa |
-    | 👤 **Perfil das Vítimas** | Sociodemografia e contexto |
-    | ⏰ **Sazonalidade** | Horários — hipótese DDM 24h |
-    | 🔍 **Feminicídio SSP** | Painel dedicado SSP |
+    | 🏢 **Delegacias & Bairros** | Rankings e concentrações de ocorrências |
+    | 🗺️ **Mapa de Bairros** | Visualização com bolhas por bairro |
+    | 🔥 **Mapa de Calor DDMs** | Calor espacial das notificações & markers das 9 DDMs |
+    | 👤 **Perfil das Vítimas** | Sociodemografia e contexto das vítimas |
+    | ⏰ **Sazonalidade** | Análise temporal (hora, dia e mês) |
+    | 🚨 **Análise DDMs** | Avaliação estatística da cobertura das DDMs |
 
     ---
 

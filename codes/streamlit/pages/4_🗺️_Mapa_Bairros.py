@@ -10,7 +10,7 @@ import numpy as np
 import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from utils.data_loader import load_sinan_cnes, load_ssp_feminicidio
+from utils.data_loader import load_sinan_cnes
 from utils.charts import apply_theme, COLORS, metric_card_css, section_header
 
 st.set_page_config(page_title="Mapa de Bairros | DDM", page_icon="🗺️", layout="wide")

@@ -9,7 +9,7 @@ import pandas as pd
 import sys, os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from utils.data_loader import load_sinan_cnes, load_ssp_feminicidio, LOCAL_OCORRENCIA_MAP
+from utils.data_loader import load_sinan_cnes, load_sim, LOCAL_OCORRENCIA_MAP
 from utils.charts import apply_theme, COLORS, PALETTE, metric_card_css, render_metric, section_header
 
 st.set_page_config(page_title="Delegacias & Bairros | DDM", page_icon="🏢", layout="wide")
@@ -21,7 +21,7 @@ st.markdown("---")
 
 # ─── Dados ────────────────────────────────────────────────────────────
 df_sinan = load_sinan_cnes()
-df_fem = load_ssp_feminicidio()
+df_sim = load_sim()
 
 # ─── Filtros ──────────────────────────────────────────────────────────
 ano_range = st.slider("Período", 2015, 2019, (2015, 2019), key="db_ano")
@@ -41,13 +41,14 @@ with c3:
     st.markdown(render_metric("Encam. DDM", f"{int(encam_ddm):,.0f}".replace(",", "."),
                               f"{encam_ddm/len(df_filt)*100:.1f}% do total"), unsafe_allow_html=True)
 with c4:
-    fem_count = len(df_fem[(df_fem['ano'] >= ano_range[0]) & (df_fem['ano'] <= ano_range[1])])
-    st.markdown(render_metric("Feminicídios SSP", str(fem_count), f"{ano_range[0]}–{ano_range[1]}"), unsafe_allow_html=True)
+    df_sim_filt = df_sim[(df_sim['ano'] >= ano_range[0]) & (df_sim['ano'] <= ano_range[1])]
+    fem_count = len(df_sim_filt)
+    st.markdown(render_metric("Feminicídios (SIM)", str(fem_count), f"Total SP {ano_range[0]}–{ano_range[1]}", "down"), unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ─── Tab Layout ───────────────────────────────────────────────────────
-tab1, tab2, tab3 = st.tabs(["🏘️ Ranking de Bairros", "🚔 Delegacias (SSP)", "📋 Cruzamento"])
+tab1, tab2 = st.tabs(["🏘️ Ranking de Bairros", "📋 Cruzamento"])
 
 # ─── Tab 1: Bairros ──────────────────────────────────────────────────
 with tab1:
@@ -104,52 +105,8 @@ with tab1:
     apply_theme(fig_ddm, height=420, show_legend=False)
     st.plotly_chart(fig_ddm, use_container_width=True)
 
-# ─── Tab 2: Delegacias SSP ───────────────────────────────────────────
+# ─── Tab 2: Cruzamento ───────────────────────────────────────────────
 with tab2:
-    st.markdown(section_header("🚔 Ranking de DPs — Feminicídios (SSP)"), unsafe_allow_html=True)
-
-    df_fem_filt = df_fem[(df_fem['ano'] >= ano_range[0]) & (df_fem['ano'] <= ano_range[1])]
-
-    if 'DP_CIRCUNSCRICAO' in df_fem_filt.columns and len(df_fem_filt) > 0:
-        dp_counts = df_fem_filt['DP_CIRCUNSCRICAO'].value_counts().head(20).reset_index()
-        dp_counts.columns = ['DP', 'Feminicídios']
-        dp_counts = dp_counts.sort_values('Feminicídios')
-
-        fig2 = go.Figure()
-        fig2.add_trace(go.Bar(
-            y=dp_counts['DP'],
-            x=dp_counts['Feminicídios'],
-            orientation='h',
-            marker=dict(
-                color=dp_counts['Feminicídios'],
-                colorscale=[[0, COLORS['warning']], [1, COLORS['danger']]],
-            ),
-            hovertemplate='<b>%{y}</b><br>Feminicídios: %{x}<extra></extra>',
-        ))
-        fig2.update_layout(title="Top 20 Distritos Policiais — Feminicídios (SSP)", xaxis_title="Nº de Casos")
-        apply_theme(fig2, height=500, show_legend=False)
-        st.plotly_chart(fig2, use_container_width=True)
-
-    if 'SECCIONAL_CIRCUNSCRICAO' in df_fem_filt.columns and len(df_fem_filt) > 0:
-        sec_counts = df_fem_filt['SECCIONAL_CIRCUNSCRICAO'].value_counts().reset_index()
-        sec_counts.columns = ['Seccional', 'Feminicídios']
-        sec_counts = sec_counts.sort_values('Feminicídios')
-
-        fig3 = go.Figure()
-        fig3.add_trace(go.Bar(
-            y=sec_counts['Seccional'],
-            x=sec_counts['Feminicídios'],
-            orientation='h',
-            marker_color=COLORS['danger'],
-            opacity=0.85,
-            hovertemplate='<b>%{y}</b><br>Feminicídios: %{x}<extra></extra>',
-        ))
-        fig3.update_layout(title="Feminicídios por Seccional", xaxis_title="Nº de Casos")
-        apply_theme(fig3, height=400, show_legend=False)
-        st.plotly_chart(fig3, use_container_width=True)
-
-# ─── Tab 3: Cruzamento ───────────────────────────────────────────────
-with tab3:
     st.markdown(section_header("📋 Bairros × Tipo de Violência"), unsafe_allow_html=True)
 
     top_bairros = df_filt['bairro'].value_counts().head(15).index.tolist()
@@ -181,3 +138,4 @@ with tab3:
     fig_heat.update_layout(title="Heatmap — Bairro × Tipo de Violência")
     apply_theme(fig_heat, height=450, show_legend=False)
     st.plotly_chart(fig_heat, use_container_width=True)
+
