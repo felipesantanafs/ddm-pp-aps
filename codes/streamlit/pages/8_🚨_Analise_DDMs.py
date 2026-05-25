@@ -143,7 +143,7 @@ with col2:
     apply_theme(fig_hora, height=400, show_legend=False)
     st.plotly_chart(fig_hora, use_container_width=True)
 
-# ─── Gráfico 3: Evolução Geográfica da Taxa DDM (Small Multiples) ────────
+# ─── Gráfico 3: Evolução Geográfica (GIF em Looping) ───────────────────
 st.markdown("---")
 st.markdown(section_header("📍 Evolução Geográfica da Taxa de Encaminhamento DDM (Base 🏥 SINAN)"), unsafe_allow_html=True)
 
@@ -159,37 +159,76 @@ df_bairro_ano = df_geo.groupby(['ano', 'bairro']).agg(
 df_bairro_ano['taxa_ddm'] = (df_bairro_ano['ddm'] / df_bairro_ano['total']) * 100
 df_bairro_ano = df_bairro_ano[df_bairro_ano['total'] >= 5] # Filtrar ruído por ano
 
+# Ordenar por ano para a animação funcionar corretamente
+df_bairro_ano = df_bairro_ano.sort_values(['ano', 'bairro'])
+
 fig_map = px.scatter_mapbox(
     df_bairro_ano,
     lat="lat", lon="lon",
     size="total", color="taxa_ddm",
-    facet_col="ano", facet_col_wrap=3,
+    animation_frame="ano",
     hover_name="bairro",
     hover_data={"ano": False, "lat": False, "lon": False, "total": True, "taxa_ddm": ':.1f'},
     color_continuous_scale=[(0, COLORS['danger']), (0.5, COLORS['warning']), (1, COLORS['primary'])],
     range_color=[0, df_bairro_ano['taxa_ddm'].quantile(0.95)],
-    size_max=20,
-    zoom=8.5,
+    size_max=30,
+    zoom=9.5,
     center={"lat": -23.5505, "lon": -46.6333},
-    mapbox_style="carto-darkmatter",
-    title="Mapas Lado-a-Lado (Small Multiples): Demanda vs Encaminhamento DDM (2015-2019)"
+    mapbox_style="carto-darkmatter"
 )
 
+# Ocultar botões nativos do Plotly (Play/Pause) e Slider para criar um efeito de "GIF limpo"
 fig_map.update_layout(
-    margin={"r":0,"t":40,"l":0,"b":0},
+    margin={"r":0,"t":0,"l":0,"b":0},
     paper_bgcolor='rgba(0,0,0,0)',
     plot_bgcolor='rgba(0,0,0,0)',
-    height=700
+    updatemenus=[dict(visible=False)],
+    sliders=[dict(visible=False)]
 )
 
-st.plotly_chart(fig_map, use_container_width=True)
+# Renderizar como HTML e injetar JavaScript para criar o Looping Automático (Efeito GIF)
+import streamlit.components.v1 as components
+
+# Coletar os anos únicos (frames)
+frames_list = [str(y) for y in sorted(df_bairro_ano['ano'].unique())]
+
+html_str = fig_map.to_html(include_plotlyjs="require", full_html=False)
+
+# Código JS inovador para forçar o Plotly a animar em loop infinito sem botões
+custom_js = f"""
+<script>
+    setTimeout(function() {{
+        var graphDivs = document.querySelectorAll('.plotly-graph-div');
+        if(graphDivs.length > 0) {{
+            var gd = graphDivs[0];
+            var frames = {frames_list};
+            var currentFrame = 0;
+            
+            // Inicia o loop de animação
+            setInterval(function() {{
+                Plotly.animate(gd, [frames[currentFrame]], {{
+                    mode: 'immediate',
+                    transition: {{duration: 500, easing: 'cubic-in-out'}},
+                    frame: {{duration: 1500, redraw: true}}
+                }});
+                
+                // Atualizar o título dinamicamente para mostrar o ano
+                Plotly.relayout(gd, {{ title: '<b>Ano: ' + frames[currentFrame] + '</b> - Demanda vs Encaminhamento DDM' }});
+                
+                currentFrame = (currentFrame + 1) % frames.length;
+            }}, 1800); // Espera o frame atual terminar antes de chamar o próximo
+        }}
+    }}, 1000);
+</script>
+"""
+
+# Renderiza o mapa interativo em loop no Streamlit
+components.html(html_str + custom_js, height=650)
 
 st.markdown("""
 <div class="insight-box">
-    <strong>Por que esta visualização? (Técnica de <i>Small Multiples</i>)</strong><br>
-    Em vez de um GIF em looping ou vídeos interativos (que obrigam a memória de curto prazo do usuário a lembrar do ano anterior), 
-    apresentamos todos os cenários simultaneamente. Isso permite uma <strong>comparação visual imediata</strong>: 
-    você pode observar facilmente quais bairros (círculos maiores) continuaram vermelhos (baixa taxa DDM) ao longo de todos os 5 anos, 
-    evidenciando a estagnação do acesso institucional na periferia.
+    <strong>Leitura da Animação:</strong> O mapa acima funciona como um <i>GIF espacial infinito</i> (tecnologia injetada via JS). 
+    Você pode dar zoom e interagir enquanto ele anima! Bairros com círculos grandes (muitas notificações) e cor vermelha/amarela (baixa taxa de encaminhamento) 
+    são potenciais territórios críticos. A animação revela se a presença institucional melhorou ou estagnou ao longo do tempo.
 </div>
 """, unsafe_allow_html=True)
