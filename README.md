@@ -36,6 +36,8 @@ Este repositório contém o código-fonte, dados e relatórios do projeto de pes
 
 O estudo combina **ciência de dados descritiva** (mapas de calor territoriais e funil da violência) com **avaliação de impacto causal** (Diferenças-em-Diferenças intra-municipal), produzindo evidências acionáveis para subsidiar a avaliação de políticas sociais e otimizar a rede de proteção à mulher na capital paulista.
 
+**Período de análise padronizado: 2015–2019** (a partir da Lei do Feminicídio até o limite do SINAN disponível).
+
 ---
 
 ## 🔍 Problema de Pesquisa
@@ -73,9 +75,9 @@ flowchart LR
 ## 📐 Metodologia
 
 ### Etapa 1 — Diagnóstico e Ciência de Dados
-- **Análise Descritiva Espacial:** Mapas de densidade (Heatmaps) por Distrito Policial, Bairro e Subprefeitura.
+- **Análise Descritiva Espacial:** Mapas de densidade (Heatmaps) por Bairro e Subprefeitura.
 - **Integração de Bases e Geolocalização (SINAN + CNES):** Como a base do SINAN omite endereços exatos para preservação da privacidade das vítimas, adotamos a **Hipótese de Proxy Espacial (Bairro de Atendimento)**. O SINAN é cruzado com o diretório geocodificado do CNES através da chave do estabelecimento notificador (`id_unidade_notificacao` = `id_estabelecimento_cnes`). Assume-se que a vítima de agressão grave busca socorro imediato no próprio bairro ou em bairros vizinhos. Desse modo, o bairro do estabelecimento de saúde serve como proxy geográfico do local da agressão.
-- **Funil da Violência:** Evolução e correlação temporal entre denúncias de Ameaça (SSP), Lesão Corporal (SSP), Violência Física Notificada Grave (SINAN) e Feminicídios (SIM) na capital.
+- **Funil da Violência:** Evolução e correlação temporal entre Ameaças (SINAN), Violência Física (SINAN) e Feminicídios (SIM) na capital, no período padronizado de **2015–2019**.
 - **Sazonalidade:** Gráficos temporais cruzando horários e dias da semana.
 
 ### Etapa 2 — Avaliação de Impacto Causal
@@ -103,9 +105,7 @@ deams-pp-aps/
 │   │   ├── extract_cnes_bd.py      # Query de estabelecimentos geolocalizados do CNES
 │   │   ├── extract_sim_bd.py       # Query de feminicídios notificados no SIM/DataSUS
 │   │   ├── extract_sinan_bd.py     # Query de notificações de agressões no SINAN/DataSUS
-│   │   ├── merge_sinan_cnes.py     # Cruzamento SINAN + CNES usando a chave do hospital
-│   │   ├── data_filter_sicpv.py    # Filtro da base SIPCV (Boletins de Ocorrência SSP-SP)
-│   │   └── pipeline_feminicidio.py # Filtro e pré-processamento de feminicídios da SSP-SP
+│   │   └── merge_sinan_cnes.py     # Cruzamento SINAN + CNES usando a chave do hospital
 │   │
 │   ├── 📂 analise_dados/           # Análise exploratória e visualizações
 │   │   └── eda_funil_violencia.py  # Análise do Funil da Violência e geração de gráficos
@@ -114,38 +114,27 @@ deams-pp-aps/
 │   │   ├── Home.py                 # Arquivo de entrada do painel principal
 │   │   ├── 📂 assets/              # Plano de fundo minimalista e bases espaciais (GeoJSON)
 │   │   ├── 📂 utils/               # Funções de carregamento rápido e geradores de gráficos Plotly
-│   │   └── 📂 pages/               # Páginas estruturadas para navegação (1 a 8)
+│   │   └── 📂 pages/               # Páginas estruturadas para navegação
 │   │       ├── 1_📊_Funil_da_Violencia.py
 │   │       ├── 2_📈_Series_Temporais.py
 │   │       ├── 3_🏢_Delegacias_Bairros.py
 │   │       ├── 4_🗺️_Mapa_Bairros.py
 │   │       ├── 5_👤_Perfil_Vitimas.py
 │   │       ├── 6_⏰_Sazonalidade.py
-│   │       ├── 7_🔍_Feminicidio_SSP.py
-│   │       └── 8_🚨_Analise_DDMs.py
+│   │       └── 7_🚨_Analise_DDMs.py
 │   │
 │   └── 📂 inferencia_causal/       # Estimação do modelo econométrico DiD (Próxima Etapa)
 │       └── .gitkeep
 │
 ├── 📂 dados/                       # Armazenamento estruturado de fontes e consolidações
-│   ├── 📂 ssp/                     # Dados provenientes da Secretaria de Segurança Pública
-│   │   ├── SIPCV_2026.xlsx         # Boletins de Ocorrência SSP (Bruto)
-│   │   ├── data_sipcv.csv          # Boletins de Ocorrência SSP (Filtrado)
-│   │   ├── Feminicidio_2015_2022.xlsx # Feminicídios SSP (Bruto)
-│   │   └── dados_feminicidio.xlsx  # Feminicídios SSP (Filtrado)
-│   │
 │   ├── 📂 sim/                     # Dados provenientes do SIM (Sistema de Mortalidade)
 │   │   └── sim_feminicidios_sp.csv # Óbitos por agressão contra mulheres (DataSUS)
 │   │
 │   ├── 📂 sinan/                   # Dados provenientes do SINAN (Notificações)
-│   │   ├── sinan_violencia_sp.csv  # Microdados de agressões físicas (DataSUS)
-│   │   └── sinan_cnes_merged.csv   # Base integrada espacialmente ao CNES
-│   │
-│   ├── 📂 cnes/                    # Cadastro Nacional de Estabelecimentos de Saúde
-│   │   └── cnes_sp_geolocalizado.csv # Dicionário de geolocalização das unidades de saúde
+│   │   └── sinan_cnes_merged.csv   # Base integrada espacialmente ao CNES (107k reg.)
 │   │
 │   └── 📂 consolidado/             # Bases prontas agregadas para visualização/modelagem
-│       └── funil_violencia_ano.csv # Tabela agregada anual do Funil da Violência
+│       └── funil_violencia_ano.csv # Tabela agregada anual do Funil da Violência (2015-2019)
 │
 └── 📂 relatorios/                  # Relatórios gerenciais e imagens geradas
     ├── PROJETO DE PESQUISA-VIOLENCIA SP.docx
@@ -153,17 +142,21 @@ deams-pp-aps/
     └── funil_violencia.png         # Gráfico temporal de evolução do funil
 ```
 
+> **Nota:** Dados da SSP (Secretaria de Segurança Pública), CNES bruto e SINAN bruto foram movidos para o `.gitignore` por incompatibilidade com a análise padronizada SINAN+SIM (2015–2019). Os scripts de extração SSP (`data_filter_sicpv.py`, `pipeline_feminicidio.py`) também foram ignorados.
+
 ---
 
 ## 📊 Dados
 
 Os microdados são obtidos diretamente via integração com o data lake público da **Base dos Dados (BigQuery)**, evitando downloads massivos de repositórios legados do DataSUS.
 
-| Base | Fonte Original | Papel no Modelo | Filtros Aplicados |
-|------|----------------|-----------------|-------------------|
-| **SIM** | DataSUS | Eficácia (Feminicídios) | SP (3550308), Mulheres, CIDs Agressão (X85-Y09) |
-| **SINAN** | DataSUS | Acesso (Ameaça/Lesão) | SP (3550308), Mulheres, com **Código CNES (Proxy Geográfico)** |
-| **SEADE** | Gov. SP | Covariáveis (Controles) | Dados agregados por distrito (vulnerabilidade, renda) |
+**Período padronizado: 2015–2019** (início da Lei do Feminicídio até o último ano disponível no SINAN).
+
+| Base | Fonte Original | Registros (2015–2019) | Papel no Modelo |
+|------|----------------|-----------------------|-----------------|
+| **SINAN+CNES** | DataSUS + CNES | **107.212** notificações | Acesso (Ameaça/Lesão) — proxy geográfico via CNES |
+| **SIM** | DataSUS | **525** óbitos | Eficácia (Feminicídios) |
+| **SEADE** | Gov. SP | *a definir* | Covariáveis (Controles socioeconômicos) |
 
 ---
 
@@ -206,6 +199,8 @@ Os scripts em Python dentro da pasta `codes/extracao_filtragem/` já possuem as 
 
 A Fase 1 está acoplada a um painel analítico dinâmico desenvolvido no Streamlit com uma identidade visual premium adaptada às cores da **FEA-USP** (azul marinho e elementos de alta visibilidade/contraste).
 
+**Bases utilizadas no dashboard:** exclusivamente **SINAN+CNES** e **SIM** (período 2015–2019).
+
 ### Como executar localmente:
 
 1. Instale as dependências listadas no `requirements.txt`:
@@ -224,9 +219,9 @@ A Fase 1 está acoplada a um painel analítico dinâmico desenvolvido no Streaml
 
 - [x] Reestruturação do escopo do projeto (Foco em São Paulo e DiD Intra-municipal)
 - [x] Criação das *queries* otimizadas para extração SIM/SINAN via Base dos Dados
-- [x] Extração dos microdados SIM (7.554 registros) e SINAN (108.427 registros)
-- [x] Pré-processamento das bases SSP-SP (SIPCV e Feminicídio 2015-2022)
+- [x] Extração dos microdados SIM (525 registros — 2015-2019) e SINAN+CNES (107.212 registros — 2015-2019)
 - [x] Construção do Funil da Violência e EDA Espaço-Temporal
-- [x] Construção do Dashboard Interativo Premium no Streamlit (8 abas funcionais com mapas e sazonalidade)
+- [x] Construção do Dashboard Interativo Premium no Streamlit (7 abas funcionais com mapas e sazonalidade)
+- [x] Padronização do período de análise para 2015–2019 (somente SINAN+SIM)
+- [ ] Mapa de calor espacial com localização das DDMs
 - [ ] Estimação do modelo econométrico causal DiD e pareamento (Propensity Score Matching)
-

@@ -53,12 +53,26 @@ desktop.ini
 ~$*.xlsm
 
 # ===========================
-# Dados pesados
+# Dados pesados / Não utilizados
 # ===========================
 # Arquivos de dados pesados NÃO utilizados ou temporários
-# (Os arquivos de dados ativos agora são rastreados no Git conforme solicitação)
 dados/**/*_unused.*
 dados/**/temp_*
+
+# SSP — Removida da análise (incompatível com SINAN/SIM)
+dados/ssp/
+
+# CNES bruto — Já integrado ao sinan_cnes_merged.csv
+dados/cnes/
+
+# SINAN bruto — Já integrado ao sinan_cnes_merged.csv
+dados/sinan/sinan_violencia_sp.csv
+
+# ===========================
+# Scripts de extração SSP (descontinuados)
+# ===========================
+codes/extracao_filtragem/data_filter_sicpv.py
+codes/extracao_filtragem/pipeline_feminicidio.py
 
 # ===========================
 # Logs e cache
