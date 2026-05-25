@@ -143,131 +143,48 @@ with col2:
     apply_theme(fig_hora, height=400, show_legend=False)
     st.plotly_chart(fig_hora, use_container_width=True)
 
-# ─── Gráfico 3: Concentração de Casos (Hexagon Map) ────────────────────
+# ─── Gráfico 3: Identificação de Zonas Críticas (Treemap) ────────────────────
 st.markdown("---")
-st.markdown(section_header("📍 Densidade Territorial e Zonas Críticas (Hexagon Binning)"), unsafe_allow_html=True)
+st.markdown(section_header("📍 Zonas Críticas de Demanda vs Resposta (Mapa de Árvore)"), unsafe_allow_html=True)
 
-df_geo = df_filt[df_filt['latitude'].notna() & df_filt['longitude'].notna()][['latitude', 'longitude']].copy()
+# Agregar dados por Bairro
+df_bairro = df_filt.groupby('bairro').agg(
+    total=('encaminhamento_delegacia_mulher', 'count'),
+    ddm=('encaminhamento_delegacia_mulher', 'sum')
+).reset_index()
 
-# Cores baseadas no print de referência: do azul (baixa) para o vermelho (alta)
-color_range = [
-    [224, 224, 224], # Cinza (Baixa)
-    [52, 152, 219],  # Azul (Relevante)
-    [46, 204, 113],  # Verde (Média)
-    [241, 196, 15],  # Amarelo (Alta)
-    [230, 126, 34],  # Laranja (Centro)
-    [231, 76, 60],   # Vermelho (Subcentro/Principal)
-    [142, 68, 173]   # Roxo (Máxima)
-]
+df_bairro['taxa_ddm'] = (df_bairro['ddm'] / df_bairro['total']) * 100
+df_bairro = df_bairro[df_bairro['total'] >= 10] # Filtrar ruído (bairros com menos de 10 casos)
 
-import pydeck as pdk
-import urllib.request
-import json
+# Para não sobrecarregar visualmente, pegar os top 100 bairros com mais casos
+df_bairro_top = df_bairro.sort_values('total', ascending=False).head(100)
 
-# Mapeamento de macro-zonas de São Paulo
-ZONAS_SP = {
-    'Centro': (['SE'], [255, 255, 255, 200]), # Branco
-    'Leste': (['ARICANDUVA-FORMOSA-CARRAO', 'CIDADE TIRADENTES', 'ERMELINO MATARAZZO', 'GUAIANASES', 'ITAIM PAULISTA', 'ITAQUERA', 'MOOCA', 'PENHA', 'SAO MATEUS', 'SAO MIGUEL', 'SAPOPEMBA', 'VILA PRUDENTE'], [231, 76, 60, 200]), # Vermelho
-    'Norte': (['CASA VERDE-CACHOEIRINHA', 'FREGUESIA-BRASILANDIA', 'JACANA-TREMEMBE', 'PERUS', 'PIRITUBA-JARAGUA', 'SANTANA-TUCURUVI', 'VILA MARIA-VILA GUILHERME'], [52, 152, 219, 200]), # Azul
-    'Oeste': (['BUTANTA', 'LAPA', 'PINHEIROS'], [46, 204, 113, 200]), # Verde
-    'Sul': (['CAMPO LIMPO', 'CAPELA DO SOCORRO', 'CIDADE ADEMAR', 'IPIRANGA', 'JABAQUARA', "M'BOI MIRIM", 'PARELHEIROS', 'SANTO AMARO', 'VILA MARIANA'], [241, 196, 15, 200]) # Amarelo
-}
-
-# Criar dicionário reverso para busca rápida da cor
-subpref_color_map = {}
-for zona, (subprefs, color) in ZONAS_SP.items():
-    for sp in subprefs:
-        subpref_color_map[sp] = color
-
-# Carregar GeoJSON na memória e injetar cores
-@st.cache_data
-def get_colored_geojson():
-    url = 'https://raw.githubusercontent.com/codigourbano/distritos-sp/master/distritos-sp.geojson'
-    req = urllib.request.urlopen(url)
-    data = json.loads(req.read())
-    for feature in data['features']:
-        subpref = feature['properties'].get('ds_subpref', '')
-        # Atribui a cor da macro-zona ou cinza se não encontrar
-        feature['properties']['line_color'] = subpref_color_map.get(subpref, [200, 200, 200, 100])
-    return data
-
-geojson_data = get_colored_geojson()
-
-# Camada de delimitação física dos bairros com cores por Zona
-geojson_layer = pdk.Layer(
-    "GeoJsonLayer",
-    data=geojson_data,
-    opacity=0.8,
-    stroked=True,
-    filled=False,
-    get_line_color="properties.line_color",
-    line_width_min_pixels=2,
+fig_tree = px.treemap(
+    df_bairro_top,
+    path=[px.Constant("Bairros de São Paulo"), 'bairro'],
+    values='total',
+    color='taxa_ddm',
+    color_continuous_scale=[(0, COLORS['danger']), (0.5, COLORS['warning']), (1, COLORS['primary'])],
+    range_color=[df_bairro_top['taxa_ddm'].min(), df_bairro_top['taxa_ddm'].max()],
+    hover_data={'taxa_ddm': ':.1f', 'total': True},
+    labels={'taxa_ddm': 'Taxa Encam. DDM (%)', 'total': 'Notificações (SINAN)'}
 )
 
-# Camada hexagonal 2D para densidade
-hexagon_layer = pdk.Layer(
-    "HexagonLayer",
-    data=df_geo,
-    get_position=["longitude", "latitude"],
-    radius=600, # Raio do hexágono em metros (ajuste de granularidade)
-    pickable=True,
-    extruded=False, # Gráfico 2D conforme referência do usuário
-    color_range=color_range,
-    coverage=0.9,
-    auto_highlight=True,
+fig_tree.update_layout(
+    margin=dict(t=30, l=10, r=10, b=10),
+    paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)',
+    coloraxis_colorbar=dict(title="Taxa DDM (%)")
 )
 
-view_state = pdk.ViewState(
-    longitude=-46.6333,
-    latitude=-23.5505,
-    zoom=9.5,
-    pitch=0, # Mapa reto (2D)
-    bearing=0
-)
-
-r = pdk.Deck(
-    layers=[geojson_layer, hexagon_layer],
-    initial_view_state=view_state,
-    map_style="mapbox://styles/mapbox/dark-v10",
-    tooltip={"text": "Densidade de Ocorrências: {elevationValue}"}
-)
-
-# Legenda HTML Customizada
-legend_html = """
-<div style="display: flex; justify-content: space-between; flex-wrap: wrap; background-color: rgba(30,30,30,0.8); padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #444;">
-    <div style="flex: 1; min-width: 250px;">
-        <h4 style="margin-top: 0; margin-bottom: 10px; color: #fff; font-size: 14px;">Densidade (Hexágonos)</h4>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="width: 15px; height: 15px; background-color: rgb(224,224,224); margin-right: 8px;"></div> <span style="font-size: 12px;">Baixa Concentração (< P20)</span></div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="width: 15px; height: 15px; background-color: rgb(52,152,219); margin-right: 8px;"></div> <span style="font-size: 12px;">Área Relevante (P20)</span></div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="width: 15px; height: 15px; background-color: rgb(46,204,113); margin-right: 8px;"></div> <span style="font-size: 12px;">Média Concentração (P50)</span></div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="width: 15px; height: 15px; background-color: rgb(241,196,15); margin-right: 8px;"></div> <span style="font-size: 12px;">Alta Concentração (P80)</span></div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="width: 15px; height: 15px; background-color: rgb(230,126,34); margin-right: 8px;"></div> <span style="font-size: 12px;">Centro (P90)</span></div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="width: 15px; height: 15px; background-color: rgb(231,76,60); margin-right: 8px;"></div> <span style="font-size: 12px;">Subcentro (P95)</span></div>
-        <div style="display: flex; align-items: center;"><div style="width: 15px; height: 15px; background-color: rgb(142,68,173); margin-right: 8px;"></div> <span style="font-size: 12px;">CBD Principal (P99)</span></div>
-    </div>
-    <div style="flex: 1; min-width: 250px;">
-        <h4 style="margin-top: 0; margin-bottom: 10px; color: #fff; font-size: 14px;">Zonas de SP (Linhas)</h4>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="width: 20px; height: 3px; background-color: rgb(255,255,255); margin-right: 8px;"></div> <span style="font-size: 12px;">Centro</span></div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="width: 20px; height: 3px; background-color: rgb(52,152,219); margin-right: 8px;"></div> <span style="font-size: 12px;">Zona Norte</span></div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="width: 20px; height: 3px; background-color: rgb(241,196,15); margin-right: 8px;"></div> <span style="font-size: 12px;">Zona Sul</span></div>
-        <div style="display: flex; align-items: center; margin-bottom: 5px;"><div style="width: 20px; height: 3px; background-color: rgb(231,76,60); margin-right: 8px;"></div> <span style="font-size: 12px;">Zona Leste</span></div>
-        <div style="display: flex; align-items: center;"><div style="width: 20px; height: 3px; background-color: rgb(46,204,113); margin-right: 8px;"></div> <span style="font-size: 12px;">Zona Oeste</span></div>
-    </div>
-</div>
-"""
-
-st.markdown(legend_html, unsafe_allow_html=True)
-st.pydeck_chart(r, use_container_width=True)
+st.plotly_chart(fig_tree, use_container_width=True, height=600)
 
 st.markdown("""
 <div class="insight-box">
-    <strong>Interpretação e Zonas de SP:</strong> 
-    As linhas coloridas delineiam as cinco macro-zonas de São Paulo (Norte, Sul, Leste, Oeste e Centro). 
-    Ao cruzar essa delimitação territorial com a densidade hexagonal (H3-style), fica evidente como a demanda 
-    (casos de violência) se concentra ou se espalha. <br><br>
+    <strong>Leitura do Mapa de Árvore (Treemap):</strong> Trocamos a visão geográfica pesada por esta visualização analítica ultrarrápida. 
+    Aqui, o <strong>tamanho de cada bloco</strong> representa o volume absoluto de ocorrências no bairro (a demanda). 
+    A <strong>cor do bloco</strong> indica a resposta institucional (Taxa de Encaminhamento à DDM), onde blocos vermelhos indicam baixa taxa e os azuis/verdes indicam alta taxa. <br><br>
     
-    Por exemplo, manchas vermelhas/roxas (CBD/Subcentros) nas áreas delimitadas em amarelo (Zona Sul) e vermelho (Zona Leste) 
-    indicam núcleos críticos que exigem a presença imediata de uma DDM ou protocolos de encaminhamento mais robustos. 
-    Diferente de pontos soltos, esta visão revela verdadeiros "polos" de incidência de forma clara e geográfica.
+    <strong>Insight Direto:</strong> Procure pelos <strong>grandes blocos vermelhos</strong>. Eles são as zonas críticas absolutas do município: territórios com altíssima demanda de violência contra a mulher, mas onde a articulação com a Delegacia da Mulher está falhando de forma sistêmica.
 </div>
 """, unsafe_allow_html=True)
