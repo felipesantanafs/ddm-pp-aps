@@ -22,15 +22,15 @@ st.markdown("---")
 
 # --- Coordenadas das 9 DDMs (Capital) ---
 DDMS = {
-    "1ª DDM Centro": {"lat": -23.5436, "lon": -46.6305, "end": "R. Bittencourt Rodrigues, 200", "func": "24 Horas"},
-    "2ª DDM Sul": {"lat": -23.5989, "lon": -46.6344, "end": "Av. 11 de Junho, 89", "func": "24 Horas"},
-    "3ª DDM Oeste": {"lat": -23.5567, "lon": -46.7444, "end": "Av. Corifeu de Azevedo Marques, 4300", "func": "Horário Comercial (09h-18h)"},
-    "4ª DDM Norte": {"lat": -23.4811, "lon": -46.6827, "end": "Av. Itaberaba, 731", "func": "24 Horas"},
-    "5ª DDM Leste": {"lat": -23.5381, "lon": -46.5744, "end": "R. Dr. Corinto Baldoino Costa, 400", "func": "24 Horas"},
-    "6ª DDM Campo Grande": {"lat": -23.6642, "lon": -46.7568, "end": "R. Sarg. Manoel B. Silva, 115", "func": "Horário Comercial (09h-18h)"},
-    "7ª DDM Leste (Itaquera)": {"lat": -23.5403, "lon": -46.4526, "end": "R. Sabado D'Angelo, 46", "func": "24 Horas"},
-    "8ª DDM Leste": {"lat": -23.5894, "lon": -46.4789, "end": "Av. Osvaldo Valle Cordeiro, 190", "func": "24 Horas"},
-    "9ª DDM Oeste (Pirituba)": {"lat": -23.4769, "lon": -46.7314, "end": "Av. Menotti Laudísio, 286", "func": "Horário Comercial (09h-18h)"}
+    "1ª DDM Centro": {"lat": -23.5574, "lon": -46.6226, "end": "Rua Vieira Ravasco, 26, Cambuci - CMB", "func": "24 Horas"},
+    "2ª DDM Sul": {"lat": -23.5989, "lon": -46.6344, "end": "Av. Onze de Julho, 89 - Saúde", "func": "Horário Comercial (09h-18h)"},
+    "3ª DDM Oeste": {"lat": -23.5567, "lon": -46.7444, "end": "Av. Corifeu de Azevedo Marques, 4300 - Jaguaré", "func": "Horário Comercial (09h-18h)"},
+    "4ª DDM Norte": {"lat": -23.4811, "lon": -46.6827, "end": "Av. Itaberaba, 731 - Freguesia do Ó", "func": "Horário Comercial (09h-18h)"},
+    "5ª DDM Leste": {"lat": -23.5381, "lon": -46.5744, "end": "Rua Dr. Corinto Baldoíno Costa, 400 - Tatuapé", "func": "Horário Comercial (09h-18h)"},
+    "6ª DDM Campo Grande": {"lat": -23.6642, "lon": -46.7568, "end": "R. Sarg. Manoel B. Silva, 115 - Campo Grande", "func": "Horário Comercial (09h-18h)"},
+    "7ª DDM Leste (Itaquera)": {"lat": -23.5403, "lon": -46.4526, "end": "Rua Sabbado D'Angelo, 46 - Itaquera", "func": "24 Horas"},
+    "8ª DDM Leste": {"lat": -23.5894, "lon": -46.4789, "end": "Av. Osvaldo do Valle Cordeiro, 190 - Jd. Marília", "func": "24 Horas"},
+    "9ª DDM Oeste (Pirituba)": {"lat": -23.4769, "lon": -46.7314, "end": "Av. Menotti Laudísio, 286 - Pirituba", "func": "Horário Comercial (09h-18h)"}
 }
 
 df_sinan = load_sinan_cnes()

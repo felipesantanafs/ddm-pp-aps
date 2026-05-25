@@ -43,21 +43,21 @@ O estudo combina **ciência de dados descritiva** (mapas de calor territoriais e
 
 ## 🏢 Delegacias de Defesa da Mulher (DDMs) na Capital
 
-O município de São Paulo conta com **9 Delegacias de Defesa da Mulher (DDMs)** de atuação territorial. Destas, **6 unidades operam em regime de plantão 24 horas** e **3 operam exclusivamente em horário comercial (09h às 18h)**.
+O município de São Paulo conta com **9 Delegacias de Defesa da Mulher (DDMs)** de atuação territorial. Destas, **3 unidades operam em regime de plantão 24 horas** e **6 operam exclusivamente em horário comercial (09h às 18h)**.
 
-Abaixo está o detalhamento de funcionamento e localização de cada unidade:
+Abaixo está o detalhamento de funcionamento, telefones e localização de cada unidade:
 
-| DDM | Região | Endereço | Funcionamento |
-| :--- | :--- | :--- | :--- |
-| **1ª DDM Centro** | Centro / Sé | Rua Bittencourt Rodrigues, 200 | 🟢 **24 Horas** |
-| **2ª DDM Sul** | Zona Sul / Saúde | Avenida 11 de Junho, 89 | 🟢 **24 Horas** |
-| **3ª DDM Oeste** | Zona Oeste / Jaguaré | Av. Corifeu de Azevedo Marques, 4300 | 🕒 **Horário Comercial (09h-18h)** |
-| **4ª DDM Norte** | Zona Norte / Freguesia do Ó | Avenida Itaberaba, 731 | 🟢 **24 Horas** |
-| **5ª DDM Leste** | Zona Leste / Tatuapé | R. Dr. Corinto Baldoino Costa, 400 | 🟢 **24 Horas** |
-| **6ª DDM Campo Grande** | Zona Sul / Santo Amaro | Rua Sargento Manoel Barbosa da Silva, 115 | 🕒 **Horário Comercial (09h-18h)** |
-| **7ª DDM Leste (Itaquera)** | Zona Leste / Itaquera | Rua Sábado D'Angelo, 46 | 🟢 **24 Horas** |
-| **8ª DDM Leste** | Zona Leste / Jd. Marília | Avenida Osvaldo Valle Cordeiro, 190 | 🟢 **24 Horas** |
-| **9ª DDM Oeste (Pirituba)** | Zona Oeste / Pirituba | Avenida Menotti Laudísio, 286 | 🕒 **Horário Comercial (09h-18h)** |
+| DDM | Região | Endereço | Telefone | Funcionamento |
+| :--- | :--- | :--- | :--- | :--- |
+| **1ª DDM Centro** | Centro | Rua Vieira Ravasco, 26, Cambuci (dentro da Casa da Mulher Brasileira) | (11) 3275-8000 | 🟢 **24 Horas** |
+| **2ª DDM Sul** | Zona Sul | Avenida Onze de Julho, 89 - Saúde | (11) 5084-2579 | 🕒 **Horário Comercial (09h-18h)** |
+| **3ª DDM Oeste** | Zona Oeste | Avenida Corifeu de Azevedo Marques, 4300 - 2º andar - Jaguaré | (11) 3768-4664 | 🕒 **Horário Comercial (09h-18h)** |
+| **4ª DDM Norte** | Zona Norte | Avenida Itaberaba, 731 - 1º andar - Freguesia do Ó | (11) 3976-2908 | 🕒 **Horário Comercial (09h-18h)** |
+| **5ª DDM Leste** | Zona Leste | Rua Dr. Corinto Baldoíno Costa, 400 - 2º andar - Tatuapé | (11) 2293-3816 | 🕒 **Horário Comercial (09h-18h)** |
+| **6ª DDM Campo Grande** | Zona Sul | Rua Sargento Manoel Barbosa da Silva, nº 115 - 2º andar - Campo Grande | (11) 5521-6068 / 5686-8567 | 🕒 **Horário Comercial (09h-18h)** |
+| **7ª DDM Leste (Itaquera)** | Zona Leste | Rua Sabbado D'Angelo, 46 - Itaquera | (11) 2071-3488 / 2071-4707 | 🟢 **24 Horas** |
+| **8ª DDM Leste** | Zona Leste | Avenida Osvaldo do Valle Cordeiro, 190 - 2º andar - Jd. Marília | (11) 2742-1701 | 🟢 **24 Horas** |
+| **9ª DDM Oeste (Pirituba)** | Zona Oeste | Avenida Menotti Laudisio, 286 - 2º andar - Pirituba | (11) 3974-8890 | 🕒 **Horário Comercial (09h-18h)** |
 
 ---
 
