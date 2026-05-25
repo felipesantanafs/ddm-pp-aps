@@ -149,11 +149,11 @@ with col_map:
     # Adicionar cada DDM como trace individual para garantir que TODOS os labels apareçam
     # (Plotly oculta labels sobrepostos em traces agrupados)
     text_positions = {
-        "1ª DDM Centro": "top right",
+        "1ª DDM Centro": "bottom center",
         "2ª DDM Sul": "top right",
         "3ª DDM Oeste": "bottom right",
         "4ª DDM Norte": "top right",
-        "5ª DDM Leste": "bottom left",
+        "5ª DDM Leste": "top right",
         "6ª DDM Campo Grande": "top right",
         "7ª DDM Leste (Itaquera)": "top left",
         "8ª DDM Leste": "bottom right",
@@ -170,8 +170,8 @@ with col_map:
                 symbol='circle',
                 opacity=1.0
             ),
-            text=[nome],
-            textfont=dict(size=13, color='white'),
+            text=[f"<b>{nome}</b>"],
+            textfont=dict(size=14, color='white'),
             textposition=text_positions.get(nome, "top right"),
             hovertemplate=f"<b>{nome}</b><br>📍 {info['end']}<extra></extra>",
             showlegend=False,

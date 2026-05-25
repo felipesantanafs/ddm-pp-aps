@@ -143,41 +143,54 @@ with col2:
     apply_theme(fig_hora, height=400, show_legend=False)
     st.plotly_chart(fig_hora, use_container_width=True)
 
-# ─── Gráfico 3: Taxa de Encaminhamento DDM por Bairro (Scatter) ──────
+# ─── Gráfico 3: Evolução Geográfica da Taxa DDM (Mapa Animado) ─────────
 st.markdown("---")
-st.markdown(section_header("📍 Taxa de Encaminhamento DDM por Bairro (Base 🏥 SINAN)"), unsafe_allow_html=True)
+st.markdown(section_header("📍 Evolução Geográfica da Taxa de Encaminhamento DDM (Base 🏥 SINAN)"), unsafe_allow_html=True)
 
-df_bairro = df_filt.groupby('bairro').agg(
+# Preparar dados com lat/lon e agregar por ano e bairro
+df_geo = df_filt[df_filt['latitude'].notna() & df_filt['longitude'].notna()].copy()
+df_bairro_ano = df_geo.groupby(['ano', 'bairro']).agg(
     total=('encaminhamento_delegacia_mulher', 'count'),
-    ddm=('encaminhamento_delegacia_mulher', 'sum')
+    ddm=('encaminhamento_delegacia_mulher', 'sum'),
+    lat=('latitude', 'median'),
+    lon=('longitude', 'median')
 ).reset_index()
 
-df_bairro['taxa_ddm'] = (df_bairro['ddm'] / df_bairro['total']) * 100
-df_bairro = df_bairro[df_bairro['total'] >= 20] # Filtro de relevância estatística
-df_bairro = df_bairro.sort_values('total', ascending=False)
+df_bairro_ano['taxa_ddm'] = (df_bairro_ano['ddm'] / df_bairro_ano['total']) * 100
+df_bairro_ano = df_bairro_ano[df_bairro_ano['total'] >= 5] # Filtrar ruído por ano
 
-fig_scatter = px.scatter(
-    df_bairro, x="total", y="taxa_ddm",
-    size="ddm", color="taxa_ddm",
+# Ordenar por ano para a animação funcionar corretamente
+df_bairro_ano = df_bairro_ano.sort_values(['ano', 'bairro'])
+
+fig_map = px.scatter_mapbox(
+    df_bairro_ano,
+    lat="lat", lon="lon",
+    size="total", color="taxa_ddm",
+    animation_frame="ano",
     hover_name="bairro",
+    hover_data={"ano": False, "lat": False, "lon": False, "total": True, "taxa_ddm": ':.1f'},
     color_continuous_scale=[(0, COLORS['danger']), (0.5, COLORS['warning']), (1, COLORS['primary'])],
-    labels={"total": "Total de Casos Notificados (SINAN)", "taxa_ddm": "Taxa de Encaminhamento DDM (%)"},
-    title="Desempenho Regional de Encaminhamento vs Demanda (Bairros com N>=20)"
+    range_color=[0, df_bairro_ano['taxa_ddm'].quantile(0.95)],
+    size_max=30,
+    zoom=9.5,
+    center={"lat": -23.5505, "lon": -46.6333},
+    mapbox_style="carto-darkmatter",
+    title="Animação: Demanda vs Encaminhamento DDM por Bairro ao Longo do Tempo"
 )
 
-# Quadrantes
-mediana_casos = df_bairro['total'].median()
-mediana_taxa = df_bairro['taxa_ddm'].median()
-fig_scatter.add_vline(x=mediana_casos, line_dash="dash", line_color=COLORS['text_dim'])
-fig_scatter.add_hline(y=mediana_taxa, line_dash="dash", line_color=COLORS['text_dim'])
+fig_map.update_layout(
+    margin={"r":0,"t":40,"l":0,"b":0},
+    paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)'
+)
 
-apply_theme(fig_scatter, height=500)
-st.plotly_chart(fig_scatter, use_container_width=True)
+st.plotly_chart(fig_map, use_container_width=True, height=600)
 
 st.markdown("""
 <div class="insight-box">
-    <strong>Leitura do Gráfico Regional:</strong> Bairros no quadrante <strong>inferior direito</strong> (alto volume de notificações, 
-    mas baixa taxa de encaminhamento DDM) são potenciais territórios críticos. Nessas áreas, a ausência de DDMs 24h ou a distância 
-    podem estar criando grandes bolsões de subnotificação policial.
+    <strong>Leitura do Mapa Animado:</strong> Use o botão "Play" para ver a evolução temporal. 
+    Bairros com círculos grandes (muitas notificações) e cor vermelha/amarela (baixa taxa de encaminhamento) 
+    são potenciais territórios críticos. Nessas áreas, a ausência de DDMs 24h ou a distância 
+    podem estar criando grandes bolsões de subnotificação policial, e o mapa revela como isso muda (ou não) com o tempo.
 </div>
 """, unsafe_allow_html=True)
