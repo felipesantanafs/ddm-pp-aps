@@ -76,7 +76,7 @@ flowchart LR
 
 ### Etapa 1 — Diagnóstico e Ciência de Dados
 - **Análise Descritiva Espacial:** Mapas de densidade (Heatmaps) por Bairro e Subprefeitura.
-- **Integração de Bases e Geolocalização (SINAN + CNES):** Como a base do SINAN omite endereços exatos para preservação da privacidade das vítimas, adotamos a **Hipótese de Proxy Espacial (Bairro de Atendimento)**. O SINAN é cruzado com o diretório geocodificado do CNES através da chave do estabelecimento notificador (`id_unidade_notificacao` = `id_estabelecimento_cnes`). Assume-se que a vítima de agressão grave busca socorro imediato no próprio bairro ou em bairros vizinhos. Desse modo, o bairro do estabelecimento de saúde serve como proxy geográfico do local da agressão.
+- **Integração de Bases e Geolocalização (SINAN + CNES):** Como a base do SINAN omite endereços exatos para preservação da privacidade das vítimas, adotamos a **Hipótese de Proxy Espacial (Bairro de Atendimento)**. O SINAN é cruzado com o diretório geocodificado do CNES através da chave do estabelecimento notificador (`id_unidade_notificacao` = `id_estabelecimento_cnes`). *Foi aplicado um patch manual de geolocalização aos 5 principais hospitais públicos do município para corrigir falhas no CEP do diretório CNES, recuperando cerca de 15.000 registros na base final*. Assume-se que a vítima de agressão grave busca socorro imediato no próprio bairro ou em bairros vizinhos. Desse modo, o bairro do estabelecimento de saúde serve como proxy geográfico do local da agressão.
 - **Funil da Violência:** Evolução e correlação temporal entre Ameaças (SINAN), Violência Física (SINAN) e Feminicídios (SIM) na capital, no período padronizado de **2015–2019**.
 - **Sazonalidade:** Gráficos temporais cruzando horários e dias da semana.
 
@@ -102,7 +102,7 @@ deams-pp-aps/
 ├── 📂 codes/                       # Scripts organizados por fases de desenvolvimento
 │   ├── 📂 extracao_filtragem/      # Extração (APIs/BigQuery) e higienização inicial
 │   │   ├── bd_config.py            # ⚠️ LOCAL APENAS — credenciais GCP (Não versionado)
-│   │   ├── extract_cnes_bd.py      # Query de estabelecimentos geolocalizados do CNES
+│   │   ├── extract_cnes_bd.py      # Query de estabelecimentos geolocalizados do CNES (Com patch manual)
 │   │   ├── extract_sim_bd.py       # Query de feminicídios notificados no SIM/DataSUS
 │   │   ├── extract_sinan_bd.py     # Query de notificações de agressões no SINAN/DataSUS
 │   │   └── merge_sinan_cnes.py     # Cruzamento SINAN + CNES usando a chave do hospital
@@ -223,5 +223,5 @@ A Fase 1 está acoplada a um painel analítico dinâmico desenvolvido no Streaml
 - [x] Construção do Funil da Violência e EDA Espaço-Temporal
 - [x] Construção do Dashboard Interativo Premium no Streamlit (7 abas funcionais com mapas e sazonalidade)
 - [x] Padronização do período de análise para 2015–2019 (somente SINAN+SIM)
-- [ ] Mapa de calor espacial com localização das DDMs
+- [x] Mapa de calor espacial com localização das DDMs e correção de geolocalização do CNES
 - [ ] Estimação do modelo econométrico causal DiD e pareamento (Propensity Score Matching)

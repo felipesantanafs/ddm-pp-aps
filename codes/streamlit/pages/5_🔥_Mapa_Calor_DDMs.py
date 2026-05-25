@@ -186,6 +186,16 @@ with col_map:
     )
     
     st.plotly_chart(fig, use_container_width=True, height=650)
+    
+    st.markdown("""
+    <div class="insight-box" style="margin-top: 15px;">
+    💡 **Interpretação do Mapa**:
+    O mapa de calor destaca a densidade de ocorrências notificadas. As DDMs estão assinaladas com marcadores vermelhos.
+    
+    **Por que faltam registros na Zona Oeste e bairros nobres?**
+    O SINAN reflete majoritariamente os atendimentos na rede pública (SUS). Mulheres de classes sociais mais altas (que habitam bairros ricos e parte da Zona Oeste) tendem a usar hospitais e clínicas particulares, onde há grande **subnotificação** da violência no sistema governamental. Isso gera uma 'mancha' concentrada nas regiões periféricas, refletindo tanto a dependência do SUS quanto a desigualdade social.
+    </div>
+    """, unsafe_allow_html=True)
 
 with col_info:
     st.markdown("#### 🏢 Lista de DDMs na Capital")
@@ -194,15 +204,6 @@ with col_info:
     for nome, info in DDMS.items():
         st.markdown(f"**{nome}**")
         st.caption(f"📍 {info['end']}")
-    
-    st.markdown("---")
-    st.markdown("""
-    💡 **Interpretação do Mapa**:
-    O mapa de calor destaca a densidade de ocorrências notificadas. As DDMs estão assinaladas com marcadores vermelhos.
-    
-    **Por que faltam registros na Zona Oeste e bairros nobres?**
-    O SINAN reflete majoritariamente os atendimentos na rede pública (SUS). Mulheres de classes sociais mais altas (que habitam bairros ricos e parte da Zona Oeste) tendem a usar hospitais e clínicas particulares, onde há grande **subnotificação** da violência no sistema governamental. Isso gera uma 'mancha' concentrada nas regiões periféricas, refletindo tanto a dependência do SUS quanto a desigualdade social.
-    """)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
