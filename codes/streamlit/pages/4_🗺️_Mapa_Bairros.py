@@ -90,7 +90,21 @@ fig = px.scatter_mapbox(
 fig.update_layout(
     margin={"r":0,"t":0,"l":0,"b":0},
     paper_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='rgba(0,0,0,0)'
+    plot_bgcolor='rgba(0,0,0,0)',
+    mapbox=dict(
+        style="carto-darkmatter",
+        center={"lat": -23.5505, "lon": -46.6333},
+        zoom=9.5,
+        layers=[
+            dict(
+                sourcetype='geojson',
+                source='https://raw.githubusercontent.com/codigourbano/distritos-sp/master/distritos-sp.geojson',
+                type='line',
+                color='rgba(255, 255, 255, 0.3)', # Linhas de delimitação física
+                line=dict(width=1)
+            )
+        ]
+    )
 )
 
 st.plotly_chart(fig, use_container_width=True, height=600)
