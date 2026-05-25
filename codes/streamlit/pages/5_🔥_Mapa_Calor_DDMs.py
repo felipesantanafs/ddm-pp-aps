@@ -170,8 +170,8 @@ with col_map:
                 symbol='circle',
                 opacity=1.0
             ),
-            text=[f"<b>{nome}</b>"],
-            textfont=dict(size=14, color='white'),
+            text=[nome.upper()], # Texto em maiúsculas (Mapbox não suporta <b>)
+            textfont=dict(size=14, color='white', family='Arial Black'),
             textposition=text_positions.get(nome, "top right"),
             hovertemplate=f"<b>{nome}</b><br>📍 {info['end']}<extra></extra>",
             showlegend=False,
