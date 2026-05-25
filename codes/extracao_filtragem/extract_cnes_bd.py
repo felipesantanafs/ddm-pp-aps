@@ -37,6 +37,24 @@ try:
     # gerando duplicatas. Vamos remover duplicatas pelo CNES mantendo o primeiro.
     df = df.drop_duplicates(subset=['id_estabelecimento_cnes'], keep='first')
     
+    # --- PATCH MANUAL PARA HOSPITAIS COM CEP FALTANTE/INVÁLIDO ---
+    # Os 5 hospitais abaixo representam quase 50% de todas as falhas de geolocalização no SINAN.
+    patch_data = {
+        '2080346': {'bairro': 'Tatuapé', 'lat': -23.5367, 'lon': -46.5684},
+        '5718368': {'bairro': 'Jardim Copacabana', 'lat': -23.6828, 'lon': -46.7562},
+        '2080583': {'bairro': 'São Miguel Paulista', 'lat': -23.4939, 'lon': -46.4385},
+        '2082837': {'bairro': 'Vila Hamburguesa', 'lat': -23.5350, 'lon': -46.7265},
+        '2078015': {'bairro': 'Cerqueira César', 'lat': -23.5576, 'lon': -46.6669}
+    }
+    
+    for cnes_id, info in patch_data.items():
+        idx = df[df['id_estabelecimento_cnes'] == cnes_id].index
+        if len(idx) > 0:
+            df.loc[idx, 'bairro'] = info['bairro']
+            df.loc[idx, 'latitude'] = info['lat']
+            df.loc[idx, 'longitude'] = info['lon']
+    # -------------------------------------------------------------
+    
     df.to_csv(output_file, index=False, encoding='utf-8')
     print(f"Dados salvos em: {output_file}")
 except Exception as e:
